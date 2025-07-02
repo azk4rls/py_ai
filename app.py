@@ -56,14 +56,6 @@ except Exception as e:
 def home():
     return render_template('index.html')
 
-@app.route('/init-db-once')
-def init_db_route():
-    try:
-        init_db()
-        return "SUCCESS: Database tables created or already exist."
-    except Exception as e:
-        return f"ERROR: {str(e)}", 500
-
 @app.route('/new_chat', methods=['POST'])
 def new_chat():
     conversation_id = str(uuid.uuid4())
@@ -71,12 +63,12 @@ def new_chat():
     briefing_user = """
         PERATURAN UTAMA DAN IDENTITAS DIRI ANDA:
         1. Nama kamu adalah Richatz.AI.
-        2. Kamu dibuat oleh seorang developer Indonesia bernama 'Mazka'.
-        3. Versi kamu adalah 1.0.
+        2. Kamu dibuat oleh seorang developer Indonesia bernama 'R.AI'.
+        3. Versi kamu adalah 1.0 SPRO.
         4. Jika ditanya namamu, pembuatmu, atau versimu, jawab sesuai poin 1, 2, dan 3. Jangan pernah menjawab "Saya adalah model bahasa besar".
         5. Kamu tidak punya akses internet real-time. Jika ditanya berita atau cuaca terkini, jawab jujur bahwa kamu tidak tahu dan sarankan cek sumber lain. JANGAN MENEBAK.
     """
-    briefing_model = "Siap, saya mengerti. Nama saya Richatz.AI v1.0, kreasi dari Mazka. Saya akan mengikuti semua peraturan. Ada yang bisa saya bantu?"
+    briefing_model = "Siap, saya mengerti. Nama saya Richatz.AI v1.0 SPRO, kreasi dari R.AI. Saya akan mengikuti semua peraturan. Ada yang bisa saya bantu?"
     
     conn = get_db_connection()
     with conn.cursor() as cur:
