@@ -2,7 +2,7 @@ import os
 import json
 import uuid
 import psycopg2
-import psycopg2.extras 
+import psycopg2.extras
 from flask import Flask, request, jsonify, render_template 
 from flask_cors import CORS
 from dotenv import load_dotenv
@@ -19,6 +19,7 @@ def get_db_connection():
     conn = psycopg2.connect(DATABASE_URL)
     return conn
 
+# ... (Fungsi init_db tetap sama persis) ...
 def init_db():
     conn = get_db_connection()
     with conn.cursor() as cur:
@@ -43,6 +44,7 @@ def init_db():
     conn.close()
     print("Database Postgres berhasil diinisialisasi.")
 
+# ... (Konfigurasi AI tetap sama persis) ...
 try:
     api_key = os.getenv("GOOGLE_API_KEY")
     genai.configure(api_key=api_key)
@@ -52,6 +54,7 @@ except Exception as e:
     model = None
     print(f"Error saat konfigurasi AI: {e}")
 
+# ... (Rute /, new_chat, history, dll tetap sama persis) ...
 @app.route('/')
 def home():
     return render_template('index.html')
@@ -68,7 +71,7 @@ def new_chat():
         4. Jika ditanya namamu, pembuatmu, atau versimu, jawab sesuai poin 1, 2, dan 3. Jangan pernah menjawab "Saya adalah model bahasa besar".
         5. Kamu tidak punya akses internet real-time. Jika ditanya berita atau cuaca terkini, jawab jujur bahwa kamu tidak tahu dan sarankan cek sumber lain. JANGAN MENEBAK.
     """
-    briefing_model = "Siap, saya mengerti. Nama saya Richatz.AI v1.0 SPRO, kreasi dari R.AI. Saya akan mengikuti semua peraturan. Ada yang bisa saya bantu?"
+    briefing_model = "Siap, saya mengerti. Nama saya Richatz.AI v1.0, kreasi dari R.AI. Saya akan mengikuti semua peraturan. Ada yang bisa saya bantu?"
     
     conn = get_db_connection()
     with conn.cursor() as cur:
@@ -79,6 +82,7 @@ def new_chat():
     conn.close()
     return jsonify({'conversation_id': conversation_id})
 
+# --- FUNGSI ASK_AI YANG SUDAH DIOPTIMALKAN ---
 @app.route('/ask', methods=['POST'])
 def ask_ai():
     data = request.get_json()
@@ -91,26 +95,42 @@ def ask_ai():
     conn = get_db_connection()
     try:
         with conn.cursor() as cur:
-            cur.execute("SELECT role, content FROM messages WHERE conversation_id = %s ORDER BY timestamp ASC", (conversation_id,))
+            # --- PERUBAHAN DI SINI ---
+            # Ambil briefing + 10 pesan terakhir untuk "memori jangka pendek" AI
+            cur.execute("""
+                (SELECT role, content FROM messages WHERE conversation_id = %s ORDER BY timestamp ASC LIMIT 2)
+                UNION ALL
+                (SELECT role, content FROM messages WHERE conversation_id = %s AND role IN ('user', 'assistant') ORDER BY timestamp DESC LIMIT 10)
+            """, (conversation_id, conversation_id))
             db_history = cur.fetchall()
+            # Urutkan kembali karena UNION
+            db_history.sort(key=lambda x: db_history.index(x) if db_history.index(x) < 2 else 99)
+
             history_for_ai = [{"role": ('model' if role in ['assistant', 'model'] else 'user'), "parts": [content]} for role, content in db_history]
+            
             chat = model.start_chat(history=history_for_ai)
             response = chat.send_message(user_prompt)
             ai_answer = response.text
+
+            # Proses penyimpanan tetap sama
             cur.execute('INSERT INTO messages (conversation_id, role, content) VALUES (%s, %s, %s)', (conversation_id, 'user', user_prompt))
             cur.execute('INSERT INTO messages (conversation_id, role, content) VALUES (%s, %s, %s)', (conversation_id, 'assistant', ai_answer))
+            
             cur.execute("SELECT count(*) FROM messages WHERE conversation_id = %s AND role = 'user'", (conversation_id,))
             user_message_count = cur.fetchone()[0]
             if user_message_count == 2:
                  cur.execute("UPDATE conversations SET title = %s WHERE id = %s", (user_prompt[:50], conversation_id))
+
         conn.commit()
         return jsonify({'answer': ai_answer})
     except Exception as e:
         print(f"Error saat memanggil API: {e}")
         return jsonify({'answer': f"Maaf, terjadi kesalahan: {e}"}), 500
     finally:
-        if conn: conn.close()
+        if conn:
+            conn.close()
 
+# ... (Rute /history, /conversation, /delete_conversation tetap sama persis) ...
 @app.route('/history', methods=['GET'])
 def get_history():
     conn = get_db_connection()
@@ -141,6 +161,7 @@ def delete_conversation(conversation_id):
             return jsonify({'status': 'error', 'message': str(e)}), 500
         finally:
             conn.close()
+
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
