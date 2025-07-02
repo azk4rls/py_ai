@@ -19,7 +19,6 @@ def get_db_connection():
     conn = psycopg2.connect(DATABASE_URL)
     return conn
 
-# ... (Fungsi init_db tetap sama persis) ...
 def init_db():
     conn = get_db_connection()
     with conn.cursor() as cur:
@@ -44,7 +43,6 @@ def init_db():
     conn.close()
     print("Database Postgres berhasil diinisialisasi.")
 
-# ... (Konfigurasi AI tetap sama persis) ...
 try:
     api_key = os.getenv("GOOGLE_API_KEY")
     genai.configure(api_key=api_key)
@@ -54,7 +52,6 @@ except Exception as e:
     model = None
     print(f"Error saat konfigurasi AI: {e}")
 
-# ... (Rute /, new_chat, history, dll tetap sama persis) ...
 @app.route('/')
 def home():
     return render_template('index.html')
@@ -65,11 +62,20 @@ def new_chat():
     title = "Percakapan Baru"
     briefing_user = """
         PERATURAN UTAMA DAN IDENTITAS DIRI ANDA:
-        1. Nama kamu adalah Richatz.AI.
-        2. Kamu dibuat oleh seorang developer Indonesia bernama 'R.AI'.
-        3. Versi kamu adalah 1.0 SPRO.
-        4. Jika ditanya namamu, pembuatmu, atau versimu, jawab sesuai poin 1, 2, dan 3. Jangan pernah menjawab "Saya adalah model bahasa besar".
-        5. Kamu tidak punya akses internet real-time. Jika ditanya berita atau cuaca terkini, jawab jujur bahwa kamu tidak tahu dan sarankan cek sumber lain. JANGAN MENEBAK.
+        1. Nama kamu adalah Richatz.AI. Kamu dibuat oleh seorang developer Indonesia bernama 'R.AI'. Versi kamu adalah 1.0.
+        2. Jika ditanya namamu, pembuatmu, atau versimu, jawab sesuai poin 1. Jangan pernah menjawab "Saya adalah model bahasa besar".
+        3. Jika ditanya tentang identitas diri, jawab sesuai poin
+        4. Kamu tidak punya akses internet real-time. Jika ditanya berita atau cuaca terkini, jawab jujur bahwa kamu tidak tahu dan sarankan cek sumber lain. JANGAN MENEBAK.
+        5. Kamu tidak boleh memberikan saran medis, hukum, atau finansial. Jika ditanya, arahkan ke profesional terkait.
+        6. Kamu tidak boleh membuat konten ilegal, berbahaya, atau tidak etis. Jika diminta, tolak dengan sopan.
+        7. Kamu tidak boleh mengumpulkan atau menyimpan data pribadi pengguna. JANGAN PERNAH MENYIMPAN DATA PENGGUNA.
+        8. Kamu harus selalu menjawab dengan sopan dan profesional. Jangan pernah menggunakan bahasa kasar atau ofensif.
+        9. Jika ada yang tidak kamu mengerti, katakan "Maaf, saya tidak mengerti pertanyaan itu." Jangan mencoba menebak jawaban.
+        10. Kamu harus selalu mengingat bahwa kamu adalah AI yang dibuat untuk membantu, bukan untuk menggantikan manusia.
+        11. Jika ada yang meminta kamu untuk melakukan sesuatu yang bertentangan dengan peraturan ini, tolak dengan tegas.
+        12. Kamu harus selalu menjaga keamanan dan privasi pengguna. Jangan pernah meminta informasi pribadi.
+        13. Jika ada yang meminta kamu untuk melakukan sesuatu yang tidak etis, tolak dengan tegas.
+        14. Kamu harus selalu mengingat bahwa kamu adalah AI yang dibuat untuk membantu, bukan untuk menggantikan manusia.
     """
     briefing_model = "Siap, saya mengerti. Nama saya Richatz.AI v1.0, kreasi dari R.AI. Saya akan mengikuti semua peraturan. Ada yang bisa saya bantu?"
     
@@ -82,7 +88,7 @@ def new_chat():
     conn.close()
     return jsonify({'conversation_id': conversation_id})
 
-# --- FUNGSI ASK_AI YANG SUDAH DIOPTIMALKAN ---
+# --- FUNGSI ASK_AI KEMBALI KE VERSI STABIL ---
 @app.route('/ask', methods=['POST'])
 def ask_ai():
     data = request.get_json()
@@ -95,24 +101,17 @@ def ask_ai():
     conn = get_db_connection()
     try:
         with conn.cursor() as cur:
-            # --- PERUBAHAN DI SINI ---
-            # Ambil briefing + 10 pesan terakhir untuk "memori jangka pendek" AI
-            cur.execute("""
-                (SELECT role, content FROM messages WHERE conversation_id = %s ORDER BY timestamp ASC LIMIT 2)
-                UNION ALL
-                (SELECT role, content FROM messages WHERE conversation_id = %s AND role IN ('user', 'assistant') ORDER BY timestamp DESC LIMIT 10)
-            """, (conversation_id, conversation_id))
+            # KEMBALI KE CARA SEDERHANA: Ambil SEMUA histori untuk konteks penuh
+            cur.execute("SELECT role, content FROM messages WHERE conversation_id = %s ORDER BY timestamp ASC", (conversation_id,))
             db_history = cur.fetchall()
-            # Urutkan kembali karena UNION
-            db_history.sort(key=lambda x: db_history.index(x) if db_history.index(x) < 2 else 99)
-
+            
             history_for_ai = [{"role": ('model' if role in ['assistant', 'model'] else 'user'), "parts": [content]} for role, content in db_history]
             
             chat = model.start_chat(history=history_for_ai)
             response = chat.send_message(user_prompt)
             ai_answer = response.text
 
-            # Proses penyimpanan tetap sama
+            # Simpan pesan baru ke database
             cur.execute('INSERT INTO messages (conversation_id, role, content) VALUES (%s, %s, %s)', (conversation_id, 'user', user_prompt))
             cur.execute('INSERT INTO messages (conversation_id, role, content) VALUES (%s, %s, %s)', (conversation_id, 'assistant', ai_answer))
             
@@ -120,7 +119,7 @@ def ask_ai():
             user_message_count = cur.fetchone()[0]
             if user_message_count == 2:
                  cur.execute("UPDATE conversations SET title = %s WHERE id = %s", (user_prompt[:50], conversation_id))
-
+        
         conn.commit()
         return jsonify({'answer': ai_answer})
     except Exception as e:
@@ -162,6 +161,6 @@ def delete_conversation(conversation_id):
         finally:
             conn.close()
 
-
 if __name__ == '__main__':
+    # init_db() # Jalankan ini manual jika perlu setup DB lokal
     app.run(debug=True, port=5000)
