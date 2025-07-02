@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Referensi elemen DOM
     const promptForm = document.getElementById('prompt-form');
     const promptInput = document.getElementById('prompt-input');
     const chatArea = document.getElementById('chat-area');
@@ -9,13 +8,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeHistoryBtn = document.getElementById('close-history-btn');
     const historyList = document.getElementById('history-list');
     const sidebarOverlay = document.getElementById('sidebar-overlay');
-
-    // PERUBAHAN PENTING DI SINI
-    const API_BASE_URL = ''; // Path relatif agar bekerja di Vercel dan lokal
-    
+    const API_BASE_URL = '';
     let currentConversationId = null;
 
-    // Fungsi untuk memulai percakapan baru
     const startNewChat = async () => {
         try {
             const response = await fetch(`${API_BASE_URL}/new_chat`, { method: 'POST' });
@@ -26,11 +21,10 @@ document.addEventListener('DOMContentLoaded', () => {
             appendMessage("Percakapan baru dimulai. Silakan bertanya.", 'ai-system');
         } catch (error) {
             console.error('Error starting new chat:', error);
-            appendMessage('Gagal memulai percakapan baru. Pastikan server berjalan.', 'ai-system');
+            appendMessage('Gagal memulai percakapan baru. Cek terminal server.', 'ai-system');
         }
     };
     
-    // ... (sisa kode JavaScript Anda tetap sama persis seperti sebelumnya) ...
     const appendMessage = (text, sender, isTyping = false) => {
         const messageDiv = document.createElement('div');
         messageDiv.classList.add('chat-message', `${sender}-message`);
@@ -42,7 +36,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         chatArea.appendChild(messageDiv);
         scrollToBottom();
-        return messageDiv;
     };
     
     const scrollToBottom = () => { chatArea.scrollTop = chatArea.scrollHeight; };
@@ -51,11 +44,9 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
         const userText = promptInput.value.trim();
         if (userText === '' || !currentConversationId) return;
-
         appendMessage(userText, 'user');
         promptInput.value = '';
         const typingIndicator = appendMessage('', 'ai', true);
-
         try {
             const response = await fetch(`${API_BASE_URL}/ask`, {
                 method: 'POST',
@@ -75,13 +66,12 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Fetch Error:', error);
         }
     });
-    
+
     const showHistory = async () => {
         try {
             const response = await fetch(`${API_BASE_URL}/history`);
             if (!response.ok) throw new Error('Gagal mengambil riwayat.');
             const conversations = await response.json();
-            
             historyList.innerHTML = '';
             if (conversations.length === 0) {
                 historyList.innerHTML = '<li class="empty-history">Belum ada riwayat.</li>';
@@ -109,7 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     historyList.appendChild(li);
                 });
             }
-            document.body.classList.add('sidebar-open'); 
+            document.body.classList.add('sidebar-open');
             sidebarOverlay.classList.add('active');
         } catch (error) {
             console.error('Error fetching history:', error);
@@ -117,29 +107,20 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    const closeSidebar = () => {
-        document.body.classList.remove('sidebar-open');
-        sidebarOverlay.classList.remove('active');
-    };
-
+    const closeSidebar = () => { document.body.classList.remove('sidebar-open'); sidebarOverlay.classList.remove('active'); };
     const handleDelete = async (id, listItemElement) => {
         if (!confirm('Anda yakin ingin menghapus percakapan ini secara permanen?')) return;
         try {
             const response = await fetch(`${API_BASE_URL}/delete_conversation/${id}`, { method: 'DELETE' });
             if (!response.ok) throw new Error('Gagal menghapus di server.');
             listItemElement.remove();
-            if (historyList.children.length === 0) {
-                historyList.innerHTML = '<li class="empty-history">Belum ada riwayat.</li>';
-            }
-            if (currentConversationId === id) {
-                startNewChat();
-            }
+            if (historyList.children.length === 0) { historyList.innerHTML = '<li class="empty-history">Belum ada riwayat.</li>'; }
+            if (currentConversationId === id) { startNewChat(); }
         } catch (error) {
             console.error('Error deleting conversation:', error);
             alert('Gagal menghapus percakapan.');
         }
     };
-
     const loadConversation = async (id) => {
         try {
             const response = await fetch(`${API_BASE_URL}/conversation/${id}`);
@@ -156,7 +137,6 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Error loading conversation:', error);
         }
     };
-
     newChatBtn.addEventListener('click', startNewChat);
     historyBtn.addEventListener('click', showHistory);
     closeHistoryBtn.addEventListener('click', closeSidebar);
