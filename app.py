@@ -23,8 +23,12 @@ def get_db_connection():
     if IS_PRODUCTION:
         if not DATABASE_URL:
             raise ValueError("POSTGRES_URL tidak ditemukan di environment Vercel.")
-        return psycopg2.connect(DATABASE_URL)
+        
+        # FIX: Tambahkan ?sslmode=require untuk koneksi aman ke Vercel Postgres
+        conn_str = DATABASE_URL + "?sslmode=require"
+        return psycopg2.connect(conn_str)
     else:
+        # ... bagian ini sudah benar, jangan diubah ...
         conn = sqlite3.connect(LOCAL_DATABASE)
         conn.row_factory = sqlite3.Row
         return conn
