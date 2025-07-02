@@ -64,8 +64,20 @@ except Exception as e:
 def home():
     return render_template('index.html')
 
+# --- TAMBAHKAN BLOK INI DI SINI ---
+@app.route('/init-db-once')
+def init_db_route():
+    """Rute sementara ini hanya untuk dipanggil satu kali guna membuat tabel di Vercel."""
+    try:
+        init_db()
+        return "SUCCESS: Database tables created or already exist."
+    except Exception as e:
+        return f"ERROR: {str(e)}", 500
+# -----------------------------------
+
 @app.route('/new_chat', methods=['POST'])
 def new_chat():
+    
     conversation_id = str(uuid.uuid4())
     title = "Percakapan Baru"
     
