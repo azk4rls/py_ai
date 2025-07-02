@@ -1,0 +1,29 @@
+# --- Rahasia & Kunci API ---
+# Baris ini adalah yang paling penting untuk keamanan Anda.
+.env
+
+# --- Folder & File Python Otomatis ---
+# Mengabaikan folder virtual environment yang berisi library.
+venv/
+.venv/
+/venv
+env/
+/env
+
+# Mengabaikan folder cache yang dibuat otomatis oleh Python.
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# --- Database ---
+# Abaikan file database agar riwayat chat pribadi Anda tidak ikut ter-upload.
+database.db
+database.db-journal
+
+# --- File-file lain yang biasa diabaikan ---
+# File sistem operasi (macOS)
+.DS_Store
+
+# Folder build
+/dist/
