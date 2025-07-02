@@ -39,7 +39,6 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     
     const scrollToBottom = () => { chatArea.scrollTop = chatArea.scrollHeight; };
-
     promptForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const userText = promptInput.value.trim();
@@ -106,7 +105,6 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('Gagal mengambil riwayat percakapan.');
         }
     };
-
     const closeSidebar = () => { document.body.classList.remove('sidebar-open'); sidebarOverlay.classList.remove('active'); };
     const handleDelete = async (id, listItemElement) => {
         if (!confirm('Anda yakin ingin menghapus percakapan ini secara permanen?')) return;
@@ -131,7 +129,7 @@ document.addEventListener('DOMContentLoaded', () => {
             messages.forEach(msg => {
                 const role = msg.role === 'assistant' ? 'ai' : msg.role;
                 appendMessage(msg.content, role);
-            });
+});
             scrollToBottom();
         } catch (error) {
             console.error('Error loading conversation:', error);
