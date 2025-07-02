@@ -177,7 +177,10 @@ body.sidebar-open .history-sidebar {
     display: flex;
     align-items: center;
     gap: 12px;
-    flex-wrap: wrap;
+    
+    /* Aturan baru untuk memaksa fleksibilitas */
+    flex-grow: 1;
+    flex-shrink: 1;
     justify-content: flex-end;
 }
 
