@@ -177,7 +177,7 @@ body.sidebar-open .history-sidebar {
     display: flex;
     align-items: center;
     gap: 12px;
-    flex-wrap: wrap; 
+    flex-wrap: wrap;
     justify-content: flex-end;
 }
 
@@ -203,8 +203,8 @@ body.sidebar-open .history-sidebar {
     height: 40px;
     background-color: #39FF14;
     border-radius: 50%;
-    background-image: url("R.AI.jpg");
-    background-size: 100%;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 10 C 25 10, 25 40, 50 40 S 75 10, 50 10 Z' fill='black'/%3E%3Ccircle cx='35' cy='60' r='5' fill='black'/%3E%3Ccircle cx='65' cy='60' r='5' fill='black'/%3E%3C/svg%3E");
+    background-size: 60%;
     background-position: center;
     background-repeat: no-repeat;
 }
@@ -228,7 +228,7 @@ body.sidebar-open .history-sidebar {
 }
 
 .user-message {
-    background-color: #14bcff;
+    background-color: #39FF14;
     color: #000000;
     align-self: flex-end;
     border-radius: 12px 12px 0 12px;
@@ -257,6 +257,7 @@ body.sidebar-open .history-sidebar {
     align-items: center;
     padding: 18px;
 }
+
 .typing .typing-dot {
     width: 8px;
     height: 8px;
@@ -265,12 +266,15 @@ body.sidebar-open .history-sidebar {
     border-radius: 50%;
     animation: typing-animation 1.4s infinite;
 }
+
 .typing .typing-dot:nth-child(2) {
     animation-delay: 0.2s;
 }
+
 .typing .typing-dot:nth-child(3) {
     animation-delay: 0.4s;
 }
+
 @keyframes typing-animation {
     0%, 60%, 100% {
         transform: translateY(0);
