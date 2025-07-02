@@ -147,7 +147,7 @@ body.sidebar-open .history-sidebar {
 
 /* --- Container Aplikasi Utama --- */
 .app-container {
-    width: 100%;
+    min-width: 0;
     height: 100vh;
     display: flex;
     flex-direction: column;
