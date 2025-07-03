@@ -10,7 +10,7 @@ body {
     background-color: #121212;
     color: #F1F1F1;
     display: flex;
-    overflow-x: hidden;
+    /* overflow-x: hidden; <-- Ini sudah ada, pastikan tidak ada elemen yang memaksakan lebar */
 }
 
 /* --- History Sidebar & Overlay --- */
@@ -49,6 +49,13 @@ body {
 body.sidebar-open .history-sidebar {
     margin-left: 0;
 }
+
+/* Pastikan body juga bisa menyusut dengan benar saat sidebar terbuka */
+body.sidebar-open .app-container {
+    margin-left: 320px; /* Dorong container utama */
+    width: calc(100% - 320px); /* Sesuaikan lebar */
+}
+
 
 .history-header {
     display: flex;
@@ -147,13 +154,13 @@ body.sidebar-open .history-sidebar {
 
 /* --- Container Aplikasi Utama --- */
 .app-container {
-    min-width: 0;
+    min-width: 0; /* Sangat penting untuk flex item agar bisa menyusut */
     height: 100vh;
     display: flex;
     flex-direction: column;
     background-color: #1E1E1E;
     flex-grow: 1;
-    transition: margin-left 0.3s ease-in-out;
+    transition: margin-left 0.3s ease-in-out, width 0.3s ease-in-out; /* Tambahkan width ke transisi */
 }
 
 /* --- Navbar (Atas) --- */
@@ -165,12 +172,17 @@ body.sidebar-open .history-sidebar {
     align-items: center;
     flex-shrink: 0;
     border-bottom: 1px solid #ddd;
+    /* Tambahkan ini untuk memastikan header juga bisa menyusut */
+    min-width: 0; 
 }
 
 .logo {
     font-size: 1.5rem;
     font-weight: 700;
     color: #000000;
+    /* Memastikan logo bisa menyusut jika teksnya panjang */
+    flex-shrink: 1;
+    min-width: 0; 
 }
 
 .main-nav {
@@ -178,10 +190,11 @@ body.sidebar-open .history-sidebar {
     align-items: center;
     gap: 12px;
     
-    /* Aturan baru untuk memaksa fleksibilitas */
     flex-grow: 1;
     flex-shrink: 1;
     justify-content: flex-end;
+    /* Memastikan navigasi bisa menyusut */
+    min-width: 0; 
 }
 
 .nav-button {
@@ -194,6 +207,8 @@ body.sidebar-open .history-sidebar {
     font-size: 0.9rem;
     font-weight: 500;
     transition: background-color 0.3s ease, transform 0.2s ease;
+    /* Memastikan tombol bisa menyusut atau menjaga ukurannya */
+    flex-shrink: 0; /* Biasanya tombol tidak menyusut, tapi gap bisa jadi masalah */
 }
 
 .nav-button:hover {
@@ -210,6 +225,7 @@ body.sidebar-open .history-sidebar {
     background-size: 60%;
     background-position: center;
     background-repeat: no-repeat;
+    flex-shrink: 0; /* Pastikan avatar tidak menyusut */
 }
 
 /* --- Area Chat (Tengah) --- */
@@ -220,14 +236,21 @@ body.sidebar-open .history-sidebar {
     display: flex;
     flex-direction: column;
     gap: 16px;
+    /* KUNCI untuk mencegah layout melebar karena konten panjang */
+    overflow-x: hidden; 
+    word-wrap: break-word; /* Untuk teks umum agar wrap */
+    word-break: break-word; /* Lebih agresif untuk memotong kata panjang */
 }
 
 .chat-message {
     padding: 12px 18px;
     border-radius: 12px;
-    max-width: 75%;
+    max-width: 75%; /* Batasi lebar pesan */
     line-height: 1.6;
-    word-wrap: break-word;
+    word-wrap: break-word; 
+    word-break: break-word; 
+    white-space: pre-wrap; /* Penting untuk menjaga spasi dan line break asli tapi tetap wrap */
+    box-sizing: border-box; /* Memastikan padding tidak membuat elemen melebihi max-width */
 }
 
 .user-message {
@@ -293,6 +316,8 @@ body.sidebar-open .history-sidebar {
     padding: 16px 24px;
     flex-shrink: 0;
     border-top: 1px solid #ddd;
+    /* Pastikan footer juga bisa menyusut */
+    min-width: 0; 
 }
 
 .prompt-container {
@@ -303,6 +328,8 @@ body.sidebar-open .history-sidebar {
     padding: 8px;
     max-width: 1200px;
     margin: 0 auto;
+    /* Pastikan container input bisa menyusut */
+    min-width: 0; 
 }
 
 #prompt-input {
@@ -313,6 +340,8 @@ body.sidebar-open .history-sidebar {
     padding: 10px;
     font-size: 1rem;
     color: #1E1E1E;
+    /* KUNCI: Pastikan input teks bisa menyusut ke 0 jika perlu */
+    min-width: 0; 
 }
 
 .prompt-container button {
@@ -328,6 +357,7 @@ body.sidebar-open .history-sidebar {
     justify-content: center;
     align-items: center;
     transition: background-color 0.3s ease, transform 0.2s ease;
+    flex-shrink: 0; /* Pastikan tombol tidak menyusut ukurannya */
 }
 
 .prompt-container button:hover {
@@ -335,31 +365,112 @@ body.sidebar-open .history-sidebar {
     transform: scale(1.05);
 }
 
+/* --- Styling untuk Blok Kode (PENTING untuk mengatasi masalah layout melebar) --- */
+/* Ini akan mempengaruhi elemen <pre> yang dihasilkan oleh Marked.js dari blok kode Markdown */
+.chat-message pre {
+    background-color: #2d2d2d; /* Warna latar belakang gelap */
+    color: #f8f8f2; /* Warna teks terang */
+    padding: 10px;
+    border-radius: 5px;
+    margin: 10px 0; /* Margin atas/bawah */
+    overflow-x: auto; /* KUNCI: Membuat scroll horizontal jika konten terlalu panjang */
+    white-space: pre-wrap; /* Memastikan baris kode yang panjang akan wrap */
+    word-wrap: break-word; /* Memastikan kata panjang dalam kode juga bisa dipotong */
+    max-width: 100%; /* Penting: Pastikan blok kode tidak melebihi lebar kontainernya */
+    box-sizing: border-box; /* Memastikan padding tidak membuat elemen melebihi max-width */
+}
+
+/* Styling untuk elemen <code> di dalam <pre> */
+.chat-message pre code {
+    font-family: 'Consolas', 'Monaco', monospace; /* Font monospace */
+    font-size: 0.9em;
+    line-height: 1.4;
+    display: block; /* Agar mengambil lebar penuh parent */
+}
+
+/* Styling untuk inline code (jika ada, biasanya `teks`) */
+.chat-message code {
+    background-color: #444;
+    padding: 2px 4px;
+    border-radius: 3px;
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 0.9em;
+    white-space: nowrap; /* Untuk inline code, mungkin tidak perlu wrap */
+}
+
+
 /* --- Desain Responsif --- */
 @media (max-width: 768px) {
     .history-sidebar {
         width: 280px;
         margin-left: -280px;
     }
+    body.sidebar-open .app-container {
+        margin-left: 280px;
+        width: calc(100% - 280px);
+    }
     .logo {
-        font-size: 1.2rem;
+        font-size: 1.1rem; /* Sedikit lebih kecil */
     }
     .main-header,
     .main-footer {
-        padding: 12px 16px;
+        padding: 12px 10px; /* Kurangi padding untuk memberi lebih banyak ruang */
     }
     .nav-button {
-        padding: 8px 12px;
+        padding: 8px 10px; /* Padding tombol sedikit lebih kecil */
         font-size: 0.8rem;
     }
     .avatar {
-        width: 32px;
-        height: 32px;
+        width: 36px; /* Sedikit lebih kecil */
+        height: 36px;
     }
     .chat-message {
-        max-width: 85%;
+        max-width: 85%; /* Sedikit lebih lebar agar pesan tidak terlalu sempit */
     }
     .prompt-container {
-        width: 100%;
+        /* Tidak perlu width: 100% karena box-sizing sudah ada dan padding di main-footer akan mengaturnya */
+        padding: 6px; /* Kurangi padding di container input */
+    }
+    #prompt-input {
+        padding: 8px; /* Kurangi padding input teks */
+        font-size: 0.95rem; /* Sedikit lebih kecil */
+    }
+    .prompt-container button {
+        width: 40px; /* Tombol kirim lebih kecil */
+        height: 40px;
+    }
+}
+
+/* --- Perbaikan Tambahan untuk Layar yang SANGAT KECIL (misal di bawah 400px) --- */
+@media (max-width: 400px) {
+    .main-header {
+        padding: 10px 8px; /* Padding header lebih kecil lagi */
+    }
+    .logo {
+        font-size: 1rem; /* Logo bisa lebih kecil */
+    }
+    .main-nav {
+        gap: 5px; /* Jarak antar tombol/avatar lebih kecil */
+    }
+    .nav-button {
+        padding: 6px 8px; /* Padding tombol paling minimal */
+        font-size: 0.75rem; /* Font tombol lebih kecil lagi */
+    }
+    .avatar {
+        width: 30px; /* Avatar terkecil */
+        height: 30px;
+    }
+    .main-footer {
+        padding: 10px 8px; /* Padding footer lebih kecil lagi */
+    }
+    .prompt-container {
+        padding: 5px; /* Padding container input paling minimal */
+    }
+    #prompt-input {
+        font-size: 0.9rem; /* Input font terkecil */
+    }
+    .prompt-container button {
+        width: 36px; /* Tombol kirim terkecil */
+        height: 36px;
     }
 }

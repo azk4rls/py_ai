@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const historyList = document.getElementById('history-list');
     const sidebarOverlay = document.getElementById('sidebar-overlay');
 
-    // UBAH INI: Pastikan URL dasar API kosong untuk membuatnya relatif terhadap domain Vercel.
+    // Pastikan URL dasar API kosong untuk membuatnya relatif terhadap domain Vercel.
     const API_BASE_URL = ''; 
     let currentConversationId = null;
 
@@ -47,9 +47,9 @@ document.addEventListener('DOMContentLoaded', () => {
             messageDiv.classList.add('typing');
             messageDiv.innerHTML = '<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>';
         } else {
-            // Menggunakan innerHTML agar teks bisa memuat HTML dasar (misal link, bold) jika diperlukan
-            // Namun, untuk keamanan, pastikan teks tidak mengandung skrip berbahaya jika sumbernya dari luar
-            messageDiv.innerHTML = text; 
+            // PENTING: UBAH BARIS INI
+            // Gunakan marked.parse() untuk mengonversi Markdown (termasuk blok kode) menjadi HTML.
+            messageDiv.innerHTML = marked.parse(text); 
         }
         chatArea.appendChild(messageDiv);
         scrollToBottom();
@@ -108,6 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             // Mengaktifkan efek 'push/shrink' dengan menambah kelas ke body
             document.body.classList.add('sidebar-open'); 
+            historySidebar.classList.add('active'); // Aktifkan juga sidebar itu sendiri
             sidebarOverlay.classList.add('active'); // Tampilkan overlay
         } catch (error) {
             console.error('Error fetching history:', error);
