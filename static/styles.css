@@ -10,7 +10,7 @@ body {
     background-color: #121212;
     color: #F1F1F1;
     display: flex;
-    overflow-x: hidden; /* Tetap pertahankan ini untuk mencegah body melebar */
+    overflow-x: hidden;
 }
 
 /* --- History Sidebar & Overlay --- */
@@ -42,20 +42,28 @@ body {
     display: flex;
     flex-direction: column;
     flex-shrink: 0;
-    margin-left: -320px;
-    transition: margin-left 0.3s ease-in-out;
+    /* UBAH INI: Gunakan position: fixed dan 'left' untuk slide-in yang bersih */
+    position: fixed;
+    top: 0;
+    left: -320px; /* Sembunyikan ke kiri (lebar sidebar) */
+    transition: left 0.3s ease-in-out; /* Transisi pergerakan dari 'left' */
 }
 
 body.sidebar-open .history-sidebar {
-    margin-left: 0;
+    left: 0; /* Geser ke posisi terlihat */
 }
 
-/* Pastikan body juga bisa menyusut dengan benar saat sidebar terbuka */
+/* UBAH INI: Gunakan transform: translateX untuk menggeser app-container */
 body.sidebar-open .app-container {
-    margin-left: 320px; /* Dorong container utama */
-    width: calc(100% - 320px); /* Sesuaikan lebar */
-    /* Menambahkan transisi untuk width agar lebih halus */
-    transition: margin-left 0.3s ease-in-out, width 0.3s ease-in-out;
+    /* Hapus margin-left dan width: calc() yang lama */
+    /* margin-left: 320px; */
+    /* width: calc(100% - 320px); */
+    
+    transform: translateX(320px); /* Geser seluruh app-container sejauh lebar sidebar */
+    /* app-container sudah punya flex-grow: 1 dan min-width: 0, 
+       jadi dia akan tetap mengisi ruang sisa secara layout, 
+       dan transform hanya menggeser visualnya. */
+    transition: transform 0.3s ease-in-out; /* Transisi pergerakan visual */
 }
 
 
@@ -156,14 +164,14 @@ body.sidebar-open .app-container {
 
 /* --- Container Aplikasi Utama --- */
 .app-container {
-    min-width: 0; /* Sangat penting untuk flex item agar bisa menyusut */
+    min-width: 0; 
     height: 100vh;
     display: flex;
     flex-direction: column;
     background-color: #1E1E1E;
     flex-grow: 1;
-    /* Transisi width sudah ada, bagus */
-    transition: margin-left 0.3s ease-in-out, width 0.3s ease-in-out;
+    /* Transisi margin-left dan width diganti ke transform di body.sidebar-open .app-container */
+    transition: transform 0.3s ease-in-out; 
 }
 
 /* --- Navbar (Atas) --- */
@@ -175,7 +183,6 @@ body.sidebar-open .app-container {
     align-items: center;
     flex-shrink: 0;
     border-bottom: 1px solid #ddd;
-    /* Tambahkan ini untuk memastikan header juga bisa menyusut */
     min-width: 0; 
 }
 
@@ -183,7 +190,6 @@ body.sidebar-open .app-container {
     font-size: 1.5rem;
     font-weight: 700;
     color: #000000;
-    /* Memastikan logo bisa menyusut jika teksnya panjang */
     flex-shrink: 1;
     min-width: 0; 
 }
@@ -196,7 +202,6 @@ body.sidebar-open .app-container {
     flex-grow: 1;
     flex-shrink: 1;
     justify-content: flex-end;
-    /* Memastikan navigasi bisa menyusut */
     min-width: 0; 
 }
 
@@ -210,8 +215,7 @@ body.sidebar-open .app-container {
     font-size: 0.9rem;
     font-weight: 500;
     transition: background-color 0.3s ease, transform 0.2s ease;
-    /* Memastikan tombol bisa menyusut atau menjaga ukurannya */
-    flex-shrink: 0; /* Biasanya tombol tidak menyusut, tapi gap bisa jadi masalah */
+    flex-shrink: 0; 
 }
 
 .nav-button:hover {
@@ -228,7 +232,7 @@ body.sidebar-open .app-container {
     background-size: 60%;
     background-position: center;
     background-repeat: no-repeat;
-    flex-shrink: 0; /* Pastikan avatar tidak menyusut */
+    flex-shrink: 0; 
 }
 
 /* --- Area Chat (Tengah) --- */
@@ -239,23 +243,20 @@ body.sidebar-open .app-container {
     display: flex;
     flex-direction: column;
     gap: 16px;
-    /* KUNCI untuk mencegah layout melebar karena konten panjang */
     overflow-x: hidden; 
-    word-wrap: break-word; /* Untuk teks umum agar wrap */
-    word-break: break-word; /* Lebih agresif untuk memotong kata panjang */
+    word-wrap: break-word; 
+    word-break: break-word; 
 }
 
 .chat-message {
-    /* UBAH INI: Kurangi padding untuk membuat bubble chat tidak terlalu "gendut" */
     padding: 10px 15px; 
     border-radius: 12px;
-    max-width: 75%; /* Batasi lebar pesan */
-    /* UBAH INI: Kurangi line-height untuk membuat bubble tidak terlalu tinggi */
+    max-width: 75%; 
     line-height: 1.5; 
     word-wrap: break-word; 
     word-break: break-word; 
-    white-space: pre-wrap; /* Penting untuk menjaga spasi dan line break asli tapi tetap wrap */
-    box-sizing: border-box; /* Memastikan padding tidak membuat elemen melebihi max-width */
+    white-space: pre-wrap; 
+    box-sizing: border-box; 
 }
 
 .user-message {
@@ -321,7 +322,6 @@ body.sidebar-open .app-container {
     padding: 16px 24px;
     flex-shrink: 0;
     border-top: 1px solid #ddd;
-    /* Pastikan footer juga bisa menyusut */
     min-width: 0; 
 }
 
@@ -333,7 +333,6 @@ body.sidebar-open .app-container {
     padding: 8px;
     max-width: 1200px;
     margin: 0 auto;
-    /* Pastikan container input bisa menyusut */
     min-width: 0; 
 }
 
@@ -345,7 +344,6 @@ body.sidebar-open .app-container {
     padding: 10px;
     font-size: 1rem;
     color: #1E1E1E;
-    /* KUNCI: Pastikan input teks bisa menyusut ke 0 jika perlu */
     min-width: 0; 
 }
 
@@ -362,7 +360,7 @@ body.sidebar-open .app-container {
     justify-content: center;
     align-items: center;
     transition: background-color 0.3s ease, transform 0.2s ease;
-    flex-shrink: 0; /* Pastikan tombol tidak menyusut ukurannya */
+    flex-shrink: 0; 
 }
 
 .prompt-container button:hover {
@@ -371,38 +369,35 @@ body.sidebar-open .app-container {
 }
 
 /* --- Styling untuk Blok Kode --- */
-/* Ini akan mempengaruhi elemen <pre> yang dihasilkan oleh Marked.js dari blok kode Markdown */
 .chat-message pre {
-    background-color: #2d2d2d; /* Warna latar belakang gelap */
-    color: #f8f8f2; /* Warna teks terang */
+    background-color: #2d2d2d; 
+    color: #f8f8f2; 
     padding: 10px;
     border-radius: 5px;
-    margin: 10px 0; /* Margin atas/bawah */
-    /* UBAH INI: HAPUS overflow-x: auto; untuk memaksa wrapping ke bawah */
+    margin: 10px 0; 
+    /* HAPUS overflow-x: auto; untuk memaksa wrapping ke bawah */
     /* overflow-x: auto; */ 
-    white-space: pre-wrap; /* Memastikan baris kode yang panjang akan wrap */
-    word-wrap: break-word; /* Memastikan kata panjang dalam kode juga bisa dipotong */
-    word-break: break-all; /* TAMBAHKAN INI untuk memecah string sangat panjang */
-    max-width: 100%; /* Penting: Pastikan blok kode tidak melebihi lebar kontainernya */
-    box-sizing: border-box; /* Memastikan padding tidak membuat elemen melebihi max-width */
+    white-space: pre-wrap; 
+    word-wrap: break-word; 
+    word-break: break-all; 
+    max-width: 100%; 
+    box-sizing: border-box; 
 }
 
-/* Styling untuk elemen <code> di dalam <pre> */
 .chat-message pre code {
-    font-family: 'Consolas', 'Monaco', monospace; /* Font monospace */
+    font-family: 'Consolas', 'Monaco', monospace; 
     font-size: 0.9em;
     line-height: 1.4;
-    display: block; /* Agar mengambil lebar penuh parent */
+    display: block; 
 }
 
-/* Styling untuk inline code (jika ada, biasanya `teks`) */
 .chat-message code {
     background-color: #444;
     padding: 2px 4px;
     border-radius: 3px;
     font-family: 'Consolas', 'Monaco', monospace;
     font-size: 0.9em;
-    white-space: nowrap; /* Untuk inline code, mungkin tidak perlu wrap */
+    white-space: nowrap; 
 }
 
 
@@ -410,39 +405,38 @@ body.sidebar-open .app-container {
 @media (max-width: 768px) {
     .history-sidebar {
         width: 280px;
-        margin-left: -280px;
+        left: -280px; /* Sesuaikan untuk lebar mobile */
     }
     body.sidebar-open .app-container {
-        margin-left: 280px;
-        width: calc(100% - 280px);
+        transform: translateX(280px); /* Sesuaikan transform untuk mobile */
     }
     .logo {
-        font-size: 1.1rem; /* Sedikit lebih kecil */
+        font-size: 1.1rem; 
     }
     .main-header,
     .main-footer {
-        padding: 12px 10px; /* Kurangi padding untuk memberi lebih banyak ruang */
+        padding: 12px 10px; 
     }
     .nav-button {
-        padding: 8px 10px; /* Padding tombol sedikit lebih kecil */
+        padding: 8px 10px; 
         font-size: 0.8rem;
     }
     .avatar {
-        width: 36px; /* Sedikit lebih kecil */
+        width: 36px; 
         height: 36px;
     }
     .chat-message {
-        max-width: 90%; /* Sedikit lebih lebar agar pesan tidak terlalu sempit */
+        max-width: 90%; 
     }
     .prompt-container {
-        padding: 6px; /* Kurangi padding di container input */
+        padding: 6px; 
     }
     #prompt-input {
-        padding: 8px; /* Kurangi padding input teks */
-        font-size: 0.95rem; /* Sedikit lebih kecil */
+        padding: 8px; 
+        font-size: 0.95rem; 
     }
     .prompt-container button {
-        width: 40px; /* Tombol kirim lebih kecil */
+        width: 40px; 
         height: 40px;
     }
 }
@@ -450,33 +444,33 @@ body.sidebar-open .app-container {
 /* --- Perbaikan Tambahan untuk Layar yang SANGAT KECIL (misal di bawah 400px) --- */
 @media (max-width: 400px) {
     .main-header {
-        padding: 10px 8px; /* Padding header lebih kecil lagi */
+        padding: 10px 8px; 
     }
     .logo {
-        font-size: 1rem; /* Logo bisa lebih kecil */
+        font-size: 1rem; 
     }
     .main-nav {
-        gap: 5px; /* Jarak antar tombol/avatar lebih kecil */
+        gap: 5px; 
     }
     .nav-button {
-        padding: 6px 8px; /* Padding tombol paling minimal */
-        font-size: 0.75rem; /* Font tombol lebih kecil lagi */
+        padding: 6px 8px; 
+        font-size: 0.75rem; 
     }
     .avatar {
-        width: 30px; /* Avatar terkecil */
+        width: 30px; 
         height: 30px;
     }
     .main-footer {
-        padding: 10px 8px; /* Padding footer lebih kecil lagi */
+        padding: 10px 8px; 
     }
     .prompt-container {
-        padding: 5px; /* Padding container input paling minimal */
+        padding: 5px; 
     }
     #prompt-input {
-        font-size: 0.9rem; /* Input font terkecil */
+        font-size: 0.9rem; 
     }
     .prompt-container button {
-        width: 36px; /* Tombol kirim terkecil */
+        width: 36px; 
         height: 36px;
     }
 }
