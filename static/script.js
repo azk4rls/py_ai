@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
             chatArea.innerHTML = ''; 
             appendMessage("Percakapan baru dimulai. Silakan ajukan pertanyaan Anda.", 'ai-system');
             
-            // Perbaikan 1: Auto-fokus dan scroll ke input saat memulai chat baru
+            // Perbaikan untuk auto-fokus dan scroll ke input saat memulai chat baru
             scrollToBottom(); // Pastikan scroll ke bawah setelah pesan sistem
             promptInput.focus(); // Fokuskan input
         } catch (error) {
@@ -48,7 +48,8 @@ document.addEventListener('DOMContentLoaded', () => {
             messageDiv.classList.add('typing');
             messageDiv.innerHTML = '<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>';
         } else {
-            // Menggunakan marked.parse() untuk mengonversi Markdown (termasuk blok kode) menjadi HTML.
+            // Gunakan marked.parse() untuk mengonversi Markdown (termasuk blok kode) menjadi HTML.
+            // Ini akan membuat elemen <pre><code> di dalam messageDiv
             messageDiv.innerHTML = marked.parse(text); 
         }
         chatArea.appendChild(messageDiv);
@@ -58,7 +59,6 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Fungsi untuk auto-scroll ke bawah
     const scrollToBottom = () => {
-        // Gunakan behavior: 'smooth' untuk animasi scroll yang lebih halus
         chatArea.scrollTo({
             top: chatArea.scrollHeight,
             behavior: 'smooth'
@@ -108,7 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             }
             document.body.classList.add('sidebar-open'); 
-            historySidebar.classList.add('active'); 
+            historySidebar.classList.add('active'); // Aktifkan juga sidebar itu sendiri
             sidebarOverlay.classList.add('active'); 
         } catch (error) {
             console.error('Error fetching history:', error);
@@ -158,19 +158,12 @@ document.addEventListener('DOMContentLoaded', () => {
             
             currentConversationId = id;
             chatArea.innerHTML = ''; 
-            // Perbaikan 2: Filter pesan briefing jika ada di frontend
             messages.forEach(msg => {
-                // Asumsi: briefing_user dan briefing_model disimpan dengan role 'user' dan 'model'
-                // Jika app.py diubah untuk tidak menyimpan briefing ke DB, ini tidak terlalu relevan.
-                // Jika masih disimpan dan role 'user' ingin disembunyikan:
-                // if (msg.role === 'user' && msg.content.startsWith("PERATURAN UTAMA DAN IDENTITAS DIRI ANDA:")) return;
-                // if (msg.role === 'model' && msg.content.startsWith("Siap, saya mengerti.")) return;
-
                 const role = msg.role === 'assistant' ? 'ai' : msg.role;
                 appendMessage(msg.content, role);
             });
             scrollToBottom();
-            promptInput.focus(); // Perbaikan 1: Fokuskan input setelah memuat history
+            promptInput.focus(); // Fokuskan input setelah memuat history
         } catch (error) {
             console.error('Error loading conversation:', error);
             appendMessage(`Gagal memuat percakapan. Detail: ${error.message}`, 'ai-system');

@@ -10,7 +10,7 @@ body {
     background-color: #121212;
     color: #F1F1F1;
     display: flex;
-    overflow-x: hidden; /* Tetap pertahankan ini untuk mencegah body melebar */
+    overflow-x: hidden; /* Penting: mencegah body melebar */
 }
 
 /* --- History Sidebar & Overlay --- */
@@ -42,20 +42,20 @@ body {
     display: flex;
     flex-direction: column;
     flex-shrink: 0;
-    position: fixed;
+    position: fixed; /* Penting: agar sidebar tidak mengganggu layout utama */
     top: 0;
-    left: -320px; /* Sembunyikan ke kiri (lebar sidebar) */
-    transition: left 0.3s ease-in-out; /* Transisi pergerakan dari 'left' */
+    left: -320px; /* Sembunyikan ke kiri */
+    transition: left 0.3s ease-in-out;
 }
 
 body.sidebar-open .history-sidebar {
     left: 0; /* Geser ke posisi terlihat */
 }
 
-/* Gunakan transform: translateX untuk menggeser app-container */
+/* Menggeser app-container saat sidebar terbuka */
 body.sidebar-open .app-container {
-    transform: translateX(320px); /* Geser seluruh app-container sejauh lebar sidebar */
-    transition: transform 0.3s ease-in-out; /* Transisi pergerakan visual */
+    transform: translateX(320px); /* Geser seluruh app-container */
+    transition: transform 0.3s ease-in-out;
 }
 
 
@@ -239,15 +239,15 @@ body.sidebar-open .app-container {
 }
 
 .chat-message {
-    padding: 10px 15px; 
+    padding: 10px 15px; /* Padding lebih ramping */
     border-radius: 12px;
-    max-width: 75%; 
-    line-height: 1.5; 
+    max-width: 75%; /* Batasi lebar bubble chat */
+    line-height: 1.5; /* Tinggi baris lebih rapat */
     word-wrap: break-word; 
     word-break: break-word; 
     white-space: pre-wrap; 
     box-sizing: border-box; 
-    overflow: hidden; /* <--- PENTING: TAMBAHKAN INI untuk memotong konten di dalam bubble chat */
+    overflow: hidden !important; /* PENTING: Paksa konten dipotong jika melebihi batas bubble chat */
 }
 
 .user-message {
@@ -359,16 +359,13 @@ body.sidebar-open .app-container {
     transform: scale(1.05);
 }
 
-/* --- Styling untuk Blok Kode --- */
-/* Ini akan mempengaruhi elemen <pre> yang dihasilkan oleh Marked.js dari blok kode Markdown */
+/* --- Styling untuk Blok Kode (PENTING: Harus selalu wrap) --- */
 .chat-message pre {
     background-color: #2d2d2d; 
     color: #f8f8f2; 
     padding: 10px;
     border-radius: 5px;
     margin: 10px 0; 
-    /* HAPUS overflow-x: auto; untuk memaksa wrapping ke bawah */
-    /* overflow-x: auto; */ 
     
     /* --- PENTING: Perbaikan Agresif untuk Wrapping Kode --- */
     white-space: pre-wrap !important; /* Paksa wrapping, override jika ada */
@@ -380,6 +377,9 @@ body.sidebar-open .app-container {
     box-sizing: border-box !important; /* Memastikan padding tidak membuat elemen melebihi max-width, override jika ada */
     
     display: block; /* Pastikan berperilaku seperti block element */
+
+    /* HAPUS/PASTIKAN TIDAK ADA INI JIKA MAU HANYA WRAP: */
+    /* overflow-x: auto; */ 
 }
 
 /* Styling untuk elemen <code> di dalam <pre> */
@@ -426,7 +426,7 @@ body.sidebar-open .app-container {
         height: 36px;
     }
     .chat-message {
-        max-width: 90%; 
+        max-width: 90%; /* Sedikit lebih lebar agar pesan tidak terlalu sempit */
     }
     .prompt-container {
         padding: 6px; 
