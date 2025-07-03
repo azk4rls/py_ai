@@ -106,7 +106,7 @@ body.sidebar-open .history-sidebar {
 }
 
 .history-list li:hover .history-title {
-    color: #142fff;
+    color: #445aff;
 }
 
 .history-list li.empty-history {
@@ -211,7 +211,7 @@ body.sidebar-open .history-sidebar {
 .avatar {
     width: 40px;
     height: 40px;
-    background-color: #142fff;
+    background-color: #445aff;
     border-radius: 50%;
     background-image: url("R.AI.jpg");
     background-size: 60%;
@@ -246,7 +246,7 @@ body.sidebar-open .history-sidebar {
 }
 
 .user-message {
-    background-color: #142fff;
+    background-color: #445aff;
     color: #000000;
     align-self: flex-end;
     border-radius: 12px 12px 0 12px;
