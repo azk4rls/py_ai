@@ -214,7 +214,7 @@ body.sidebar-open .history-sidebar {
     background-color: #445aff;
     border-radius: 50%;
     background-image: url("R.AI.jpg");
-    background-size: 60%;
+    background-size: 100%;
     background-position: center;
     background-repeat: no-repeat;
     flex-shrink: 0; /* Pastikan avatar tidak menyusut */
