@@ -10,7 +10,7 @@ body {
     background-color: #121212;
     color: #F1F1F1;
     display: flex;
-    overflow-x: hidden;
+    overflow-x: hidden; /* Tetap pertahankan ini untuk mencegah body melebar */
 }
 
 /* --- History Sidebar & Overlay --- */
@@ -42,7 +42,6 @@ body {
     display: flex;
     flex-direction: column;
     flex-shrink: 0;
-    /* UBAH INI: Gunakan position: fixed dan 'left' untuk slide-in yang bersih */
     position: fixed;
     top: 0;
     left: -320px; /* Sembunyikan ke kiri (lebar sidebar) */
@@ -53,16 +52,9 @@ body.sidebar-open .history-sidebar {
     left: 0; /* Geser ke posisi terlihat */
 }
 
-/* UBAH INI: Gunakan transform: translateX untuk menggeser app-container */
+/* Gunakan transform: translateX untuk menggeser app-container */
 body.sidebar-open .app-container {
-    /* Hapus margin-left dan width: calc() yang lama */
-    /* margin-left: 320px; */
-    /* width: calc(100% - 320px); */
-    
     transform: translateX(320px); /* Geser seluruh app-container sejauh lebar sidebar */
-    /* app-container sudah punya flex-grow: 1 dan min-width: 0, 
-       jadi dia akan tetap mengisi ruang sisa secara layout, 
-       dan transform hanya menggeser visualnya. */
     transition: transform 0.3s ease-in-out; /* Transisi pergerakan visual */
 }
 
@@ -168,10 +160,9 @@ body.sidebar-open .app-container {
     height: 100vh;
     display: flex;
     flex-direction: column;
+    transition: transform 0.3s ease-in-out; 
     background-color: #1E1E1E;
     flex-grow: 1;
-    /* Transisi margin-left dan width diganti ke transform di body.sidebar-open .app-container */
-    transition: transform 0.3s ease-in-out; 
 }
 
 /* --- Navbar (Atas) --- */
@@ -198,7 +189,6 @@ body.sidebar-open .app-container {
     display: flex;
     align-items: center;
     gap: 12px;
-    
     flex-grow: 1;
     flex-shrink: 1;
     justify-content: flex-end;
@@ -257,6 +247,7 @@ body.sidebar-open .app-container {
     word-break: break-word; 
     white-space: pre-wrap; 
     box-sizing: border-box; 
+    overflow: hidden; /* <--- TAMBAHKAN INI: Pastikan pesan itu sendiri memotong konten yang melebihi */
 }
 
 .user-message {
