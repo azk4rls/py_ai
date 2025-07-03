@@ -1,4 +1,7 @@
 /* --- Reset & Gaya Dasar --- */
+html, body { /* TAMBAHKAN/UBAH INI: Pastikan HTML dan Body mengambil 100% tinggi viewport */
+    height: 100%;
+}
 * {
     margin: 0;
     padding: 0;
@@ -11,6 +14,8 @@ body {
     color: #F1F1F1;
     display: flex;
     overflow-x: hidden;
+    /* TAMBAHKAN INI: Pastikan body tidak memiliki scrollbar vertikalnya sendiri */
+    overflow-y: hidden; 
 }
 
 /* --- History Sidebar & Overlay --- */
@@ -156,7 +161,7 @@ body.sidebar-open .app-container {
 /* --- Container Aplikasi Utama --- */
 .app-container {
     min-width: 0; 
-    height: 100vh;
+    height: 100%; /* UBAH INI: Pastikan app-container mengambil 100% tinggi dari body */
     display: flex;
     flex-direction: column;
     transition: transform 0.3s ease-in-out; 
@@ -171,7 +176,7 @@ body.sidebar-open .app-container {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    flex-shrink: 0;
+    flex-shrink: 0; /* Penting: agar header tidak menyusut */
     border-bottom: 1px solid #ddd;
     min-width: 0; 
 }
@@ -228,11 +233,11 @@ body.sidebar-open .app-container {
 .chat-area {
     flex-grow: 1;
     padding: 24px;
-    overflow-y: auto;
+    overflow-y: auto !important; /* PENTING: Memaksa scrollbar vertikal pada chat area */
     display: flex;
     flex-direction: column;
     gap: 16px;
-    overflow-x: hidden; /* Pastikan ini ada untuk menyembunyikan overflow dari chat-area */
+    overflow-x: hidden; 
     word-wrap: break-word; 
     word-break: break-word; 
 }
@@ -248,7 +253,7 @@ body.sidebar-open .app-container {
     box-sizing: border-box; 
     overflow: hidden !important; /* Memotong konten yang melebihi batas bubble chat */
 
-    /* Perbaikan 2: Reset margin agar tidak ada dorongan yang tidak diinginkan dari align-self */
+    /* Perbaikan: Reset margin agar tidak ada dorongan yang tidak diinginkan dari align-self */
     margin-left: 0; /* Pastikan defaultnya 0 */
     margin-right: 0; /* Pastikan defaultnya 0 */
 }
@@ -282,7 +287,6 @@ body.sidebar-open .app-container {
     margin-left: auto; /* Dorong ke tengah */
     margin-right: auto; /* Dorong ke tengah */
 }
-
 
 /* Animasi mengetik */
 .typing {
@@ -321,7 +325,7 @@ body.sidebar-open .app-container {
 .main-footer {
     background-color: #F1F1F1;
     padding: 16px 24px;
-    flex-shrink: 0;
+    flex-shrink: 0; /* Penting: agar footer tidak menyusut */
     border-top: 1px solid #ddd;
     min-width: 0; 
 }
@@ -373,12 +377,10 @@ body.sidebar-open .app-container {
 .chat-message pre {
     background-color: #2d2d2d; 
     color: #f8f8f2; 
-    /* Perbaikan 1: Pastikan padding ini efektif dan tidak ada yang menimpanya */
-    padding: 10px !important; /* Tambahkan !important jika diperlukan untuk padding */
+    padding: 10px !important; /* Pastikan padding ini efektif di semua sisi */
     border-radius: 5px;
     margin: 10px 0; 
     
-    /* --- PENTING: Perbaikan Agresif untuk Wrapping Kode --- */
     white-space: pre-wrap !important; 
     word-wrap: break-word !important; 
     word-break: break-all !important; 
@@ -434,7 +436,7 @@ body.sidebar-open .app-container {
         height: 36px;
     }
     .chat-message {
-        max-width: 90%; 
+        max-width: 90%; /* Sedikit lebih lebar agar pesan tidak terlalu sempit */
     }
     .prompt-container {
         padding: 6px; 
