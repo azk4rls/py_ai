@@ -19,22 +19,23 @@ document.addEventListener('DOMContentLoaded', () => {
     // Memulai percakapan baru
     const startNewChat = async () => {
         try {
-            // Menggunakan API_BASE_URL yang sekarang kosong, sehingga fetch akan memanggil /new_chat relatif terhadap domain saat ini
             const response = await fetch(`${API_BASE_URL}/new_chat`, { method: 'POST' });
             
-            // Tambahkan penanganan untuk respons HTTP yang tidak OK
             if (!response.ok) {
-                const errorBody = await response.text(); // Coba ambil teks error dari body respons
+                const errorBody = await response.text(); 
                 throw new Error(`Gagal membuat chat baru di server. Status: ${response.status}. Pesan: ${errorBody || 'Tidak ada pesan error dari server.'}`);
             }
 
             const data = await response.json();
             currentConversationId = data.conversation_id;
-            chatArea.innerHTML = ''; // Kosongkan area chat untuk percakapan baru
+            chatArea.innerHTML = ''; 
             appendMessage("Percakapan baru dimulai. Silakan ajukan pertanyaan Anda.", 'ai-system');
+            
+            // Perbaikan 1: Auto-fokus dan scroll ke input saat memulai chat baru
+            scrollToBottom(); // Pastikan scroll ke bawah setelah pesan sistem
+            promptInput.focus(); // Fokuskan input
         } catch (error) {
             console.error('Error starting new chat:', error);
-            // Tampilkan pesan error yang lebih informatif ke pengguna
             appendMessage(`Gagal memulai percakapan baru. Pastikan server berjalan. Detail: ${error.message}`, 'ai-system');
         }
     };
@@ -47,8 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
             messageDiv.classList.add('typing');
             messageDiv.innerHTML = '<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>';
         } else {
-            // PENTING: UBAH BARIS INI
-            // Gunakan marked.parse() untuk mengonversi Markdown (termasuk blok kode) menjadi HTML.
+            // Menggunakan marked.parse() untuk mengonversi Markdown (termasuk blok kode) menjadi HTML.
             messageDiv.innerHTML = marked.parse(text); 
         }
         chatArea.appendChild(messageDiv);
@@ -58,47 +58,48 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Fungsi untuk auto-scroll ke bawah
     const scrollToBottom = () => {
-        chatArea.scrollTop = chatArea.scrollHeight;
+        // Gunakan behavior: 'smooth' untuk animasi scroll yang lebih halus
+        chatArea.scrollTo({
+            top: chatArea.scrollHeight,
+            behavior: 'smooth'
+        });
     };
 
     // Membuka sidebar history
     const showHistory = async () => {
         try {
-            const response = await fetch(`${API_BASE_URL}/history`); // Menggunakan API_BASE_URL relatif
+            const response = await fetch(`${API_BASE_URL}/history`); 
             if (!response.ok) {
                 const errorBody = await response.text();
                 throw new Error(`Gagal mengambil riwayat. Status: ${response.status}. Pesan: ${errorBody || 'Tidak ada pesan error dari server.'}`);
             }
             const conversations = await response.json();
             
-            historyList.innerHTML = ''; // Kosongkan daftar riwayat sebelum mengisi ulang
+            historyList.innerHTML = ''; 
             if (conversations.length === 0) {
                 historyList.innerHTML = '<li class="empty-history">Belum ada riwayat.</li>';
             } else {
                 conversations.forEach(conv => {
                     const li = document.createElement('li');
-                    li.dataset.id = conv.id; // Menyimpan ID percakapan di elemen data
+                    li.dataset.id = conv.id; 
 
                     const titleSpan = document.createElement('span');
                     titleSpan.className = 'history-title';
-                    // Batasi panjang judul agar tidak terlalu panjang di sidebar
                     titleSpan.textContent = conv.title.substring(0, 25) + (conv.title.length > 25 ? '...' : '');
                     
                     const deleteBtn = document.createElement('button');
                     deleteBtn.className = 'delete-chat-btn';
-                    // Menggunakan SVG untuk ikon hapus
                     deleteBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>';
 
                     li.addEventListener('click', (e) => {
-                        // Pastikan hanya elemen judul yang memuat chat, bukan tombol delete
                         if (e.target.closest('.delete-chat-btn')) return;
                         loadConversation(conv.id);
-                        closeSidebar(); // Tutup sidebar setelah memuat percakapan
+                        closeSidebar(); 
                     });
 
                     deleteBtn.addEventListener('click', (e) => {
-                        e.stopPropagation(); // Mencegah event click menyebar ke parent <li>
-                        handleDelete(conv.id, li); // Panggil fungsi hapus
+                        e.stopPropagation(); 
+                        handleDelete(conv.id, li); 
                     });
 
                     li.appendChild(titleSpan);
@@ -106,10 +107,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     historyList.appendChild(li);
                 });
             }
-            // Mengaktifkan efek 'push/shrink' dengan menambah kelas ke body
             document.body.classList.add('sidebar-open'); 
-            historySidebar.classList.add('active'); // Aktifkan juga sidebar itu sendiri
-            sidebarOverlay.classList.add('active'); // Tampilkan overlay
+            historySidebar.classList.add('active'); 
+            sidebarOverlay.classList.add('active'); 
         } catch (error) {
             console.error('Error fetching history:', error);
             alert(`Gagal mengambil riwayat percakapan. Detail: ${error.message}`);
@@ -118,27 +118,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Menutup sidebar
     const closeSidebar = () => {
-        document.body.classList.remove('sidebar-open'); // Memicu layout untuk kembali normal
-        historySidebar.classList.remove('active'); // Pastikan sidebar itu sendiri juga disembunyikan
-        sidebarOverlay.classList.remove('active'); // Sembunyikan overlay
+        document.body.classList.remove('sidebar-open'); 
+        historySidebar.classList.remove('active'); 
+        sidebarOverlay.classList.remove('active'); 
     };
 
     // Menghapus percakapan
     const handleDelete = async (id, listItemElement) => {
         if (!confirm('Anda yakin ingin menghapus percakapan ini secara permanen?')) return;
         try {
-            const response = await fetch(`${API_BASE_URL}/delete_conversation/${id}`, { method: 'DELETE' }); // Menggunakan API_BASE_URL relatif
+            const response = await fetch(`${API_BASE_URL}/delete_conversation/${id}`, { method: 'DELETE' }); 
             if (!response.ok) {
                 const errorBody = await response.text();
                 throw new Error(`Gagal menghapus di server. Status: ${response.status}. Pesan: ${errorBody || 'Tidak ada pesan error dari server.'}`);
             }
             
-            listItemElement.remove(); // Hapus elemen dari DOM
-            // Jika tidak ada riwayat tersisa, tampilkan pesan kosong
+            listItemElement.remove(); 
             if (historyList.children.length === 0) {
                 historyList.innerHTML = '<li class="empty-history">Belum ada riwayat.</li>';
             }
-            // Jika percakapan yang sedang aktif dihapus, mulai chat baru
             if (currentConversationId === id) {
                 startNewChat();
             }
@@ -151,7 +149,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Memuat percakapan lama
     const loadConversation = async (id) => {
         try {
-            const response = await fetch(`${API_BASE_URL}/conversation/${id}`); // Menggunakan API_BASE_URL relatif
+            const response = await fetch(`${API_BASE_URL}/conversation/${id}`); 
             if (!response.ok) {
                 const errorBody = await response.text();
                 throw new Error(`Gagal memuat percakapan. Status: ${response.status}. Pesan: ${errorBody || 'Tidak ada pesan error dari server.'}`);
@@ -159,12 +157,20 @@ document.addEventListener('DOMContentLoaded', () => {
             const messages = await response.json();
             
             currentConversationId = id;
-            chatArea.innerHTML = ''; // Kosongkan area chat
+            chatArea.innerHTML = ''; 
+            // Perbaikan 2: Filter pesan briefing jika ada di frontend
             messages.forEach(msg => {
+                // Asumsi: briefing_user dan briefing_model disimpan dengan role 'user' dan 'model'
+                // Jika app.py diubah untuk tidak menyimpan briefing ke DB, ini tidak terlalu relevan.
+                // Jika masih disimpan dan role 'user' ingin disembunyikan:
+                // if (msg.role === 'user' && msg.content.startsWith("PERATURAN UTAMA DAN IDENTITAS DIRI ANDA:")) return;
+                // if (msg.role === 'model' && msg.content.startsWith("Siap, saya mengerti.")) return;
+
                 const role = msg.role === 'assistant' ? 'ai' : msg.role;
                 appendMessage(msg.content, role);
             });
             scrollToBottom();
+            promptInput.focus(); // Perbaikan 1: Fokuskan input setelah memuat history
         } catch (error) {
             console.error('Error loading conversation:', error);
             appendMessage(`Gagal memuat percakapan. Detail: ${error.message}`, 'ai-system');
@@ -175,33 +181,33 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Listener untuk form utama (saat user submit prompt)
     promptForm.addEventListener('submit', async (e) => {
-        e.preventDefault(); // Mencegah pengiriman form default
+        e.preventDefault(); 
         const userText = promptInput.value.trim();
-        // Jangan lakukan apa-apa jika prompt kosong atau belum ada conversation ID
         if (userText === '' || !currentConversationId) return;
 
-        appendMessage(userText, 'user'); // Tampilkan pesan user
-        promptInput.value = ''; // Kosongkan input
-        const typingIndicator = appendMessage('', 'ai', true); // Tampilkan indikator mengetik
+        appendMessage(userText, 'user'); 
+        promptInput.value = ''; 
+        const typingIndicator = appendMessage('', 'ai', true); 
 
         try {
-            const response = await fetch(`${API_BASE_URL}/ask`, { // Menggunakan API_BASE_URL relatif
+            const response = await fetch(`${API_BASE_URL}/ask`, { 
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ prompt: userText, conversation_id: currentConversationId }),
             });
 
             if (!response.ok) {
-                const errData = await response.json(); // Coba parsing JSON error
+                const errData = await response.json(); 
                 throw new Error(errData.answer || `Network response was not ok. Status: ${response.status}.`);
             }
             const data = await response.json();
-            typingIndicator.remove(); // Hapus indikator mengetik
-            appendMessage(data.answer, 'ai'); // Tampilkan respons AI
+            typingIndicator.remove(); 
+            appendMessage(data.answer, 'ai'); 
+            scrollToBottom(); // Scroll to bottom after AI response
         } catch (error) {
-            typingIndicator.remove(); // Hapus indikator mengetik
-            appendMessage(`Maaf, terjadi kesalahan: ${error.message}`, 'ai-system'); // Tampilkan pesan error ke user
-            console.error('Fetch Error:', error); // Log error lengkap ke konsol
+            typingIndicator.remove(); 
+            appendMessage(`Maaf, terjadi kesalahan: ${error.message}`, 'ai-system'); 
+            console.error('Fetch Error:', error); 
         }
     });
 

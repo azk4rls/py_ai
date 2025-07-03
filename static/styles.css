@@ -10,7 +10,7 @@ body {
     background-color: #121212;
     color: #F1F1F1;
     display: flex;
-    /* overflow-x: hidden; <-- Ini sudah ada, pastikan tidak ada elemen yang memaksakan lebar */
+    overflow-x: hidden; /* Tetap pertahankan ini untuk mencegah body melebar */
 }
 
 /* --- History Sidebar & Overlay --- */
@@ -54,6 +54,8 @@ body.sidebar-open .history-sidebar {
 body.sidebar-open .app-container {
     margin-left: 320px; /* Dorong container utama */
     width: calc(100% - 320px); /* Sesuaikan lebar */
+    /* Menambahkan transisi untuk width agar lebih halus */
+    transition: margin-left 0.3s ease-in-out, width 0.3s ease-in-out;
 }
 
 
@@ -160,7 +162,8 @@ body.sidebar-open .app-container {
     flex-direction: column;
     background-color: #1E1E1E;
     flex-grow: 1;
-    transition: margin-left 0.3s ease-in-out, width 0.3s ease-in-out; /* Tambahkan width ke transisi */
+    /* Transisi width sudah ada, bagus */
+    transition: margin-left 0.3s ease-in-out, width 0.3s ease-in-out;
 }
 
 /* --- Navbar (Atas) --- */
@@ -243,10 +246,12 @@ body.sidebar-open .app-container {
 }
 
 .chat-message {
-    padding: 12px 18px;
+    /* UBAH INI: Kurangi padding untuk membuat bubble chat tidak terlalu "gendut" */
+    padding: 10px 15px; 
     border-radius: 12px;
     max-width: 75%; /* Batasi lebar pesan */
-    line-height: 1.6;
+    /* UBAH INI: Kurangi line-height untuk membuat bubble tidak terlalu tinggi */
+    line-height: 1.5; 
     word-wrap: break-word; 
     word-break: break-word; 
     white-space: pre-wrap; /* Penting untuk menjaga spasi dan line break asli tapi tetap wrap */
@@ -365,7 +370,7 @@ body.sidebar-open .app-container {
     transform: scale(1.05);
 }
 
-/* --- Styling untuk Blok Kode (PENTING untuk mengatasi masalah layout melebar) --- */
+/* --- Styling untuk Blok Kode --- */
 /* Ini akan mempengaruhi elemen <pre> yang dihasilkan oleh Marked.js dari blok kode Markdown */
 .chat-message pre {
     background-color: #2d2d2d; /* Warna latar belakang gelap */
@@ -373,9 +378,11 @@ body.sidebar-open .app-container {
     padding: 10px;
     border-radius: 5px;
     margin: 10px 0; /* Margin atas/bawah */
-    overflow-x: auto; /* KUNCI: Membuat scroll horizontal jika konten terlalu panjang */
+    /* UBAH INI: HAPUS overflow-x: auto; untuk memaksa wrapping ke bawah */
+    /* overflow-x: auto; */ 
     white-space: pre-wrap; /* Memastikan baris kode yang panjang akan wrap */
     word-wrap: break-word; /* Memastikan kata panjang dalam kode juga bisa dipotong */
+    word-break: break-all; /* TAMBAHKAN INI untuk memecah string sangat panjang */
     max-width: 100%; /* Penting: Pastikan blok kode tidak melebihi lebar kontainernya */
     box-sizing: border-box; /* Memastikan padding tidak membuat elemen melebihi max-width */
 }
@@ -425,10 +432,9 @@ body.sidebar-open .app-container {
         height: 36px;
     }
     .chat-message {
-        max-width: 85%; /* Sedikit lebih lebar agar pesan tidak terlalu sempit */
+        max-width: 90%; /* Sedikit lebih lebar agar pesan tidak terlalu sempit */
     }
     .prompt-container {
-        /* Tidak perlu width: 100% karena box-sizing sudah ada dan padding di main-footer akan mengaturnya */
         padding: 6px; /* Kurangi padding di container input */
     }
     #prompt-input {
