@@ -10,7 +10,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const historyList = document.getElementById('history-list');
     const sidebarOverlay = document.getElementById('sidebar-overlay');
 
-    const API_BASE_URL = 'http://127.0.0.1:5000';
+    // UBAH BARIS INI
+    const API_BASE_URL = ''; // Jadikan string kosong agar path menjadi relatif
+    // Atau bisa juga tidak perlu variabel ini dan langsung panggil '/new_chat', '/ask', dst.
+
     let currentConversationId = null;
 
     // --- FUNGSI-FUNGSI UTAMA ---
@@ -18,43 +21,34 @@ document.addEventListener('DOMContentLoaded', () => {
     // Memulai percakapan baru
     const startNewChat = async () => {
         try {
-            const response = await fetch(`${API_BASE_URL}/new_chat`, { method: 'POST' });
-            if (!response.ok) throw new Error('Gagal membuat chat baru di server.');
+            // Panggil endpoint relatif.
+            // Browser akan otomatis menambahkan domain saat ini (misalnya richatzai.vercel.app)
+            const response = await fetch(`${API_BASE_URL}/new_chat`, { method: 'POST' }); // Atau cukup fetch('/new_chat', { method: 'POST' });
+            if (!response.ok) {
+                // Tangani error HTTP status codes dengan lebih baik
+                const errorBody = await response.text(); // Coba ambil teks error dari body respons
+                throw new Error(`Gagal membuat chat baru di server. Status: ${response.status}. Pesan: ${errorBody}`);
+            }
             const data = await response.json();
             currentConversationId = data.conversation_id;
             chatArea.innerHTML = '';
             appendMessage("Percakapan baru dimulai. Silakan ajukan pertanyaan Anda.", 'ai-system');
         } catch (error) {
             console.error('Error starting new chat:', error);
-            appendMessage('Gagal memulai percakapan baru. Pastikan server berjalan.', 'ai-system');
+            appendMessage(`Gagal memulai percakapan baru. Pastikan server berjalan. Detail: ${error.message}`, 'ai-system');
         }
     };
     
-    // Menampilkan pesan di layar
-    const appendMessage = (text, sender, isTyping = false) => {
-        const messageDiv = document.createElement('div');
-        messageDiv.classList.add('chat-message', `${sender}-message`);
-        if (isTyping) {
-            messageDiv.classList.add('typing');
-            messageDiv.innerHTML = '<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>';
-        } else {
-            messageDiv.innerText = text;
-        }
-        chatArea.appendChild(messageDiv);
-        scrollToBottom();
-        return messageDiv;
-    };
-    
-    // Fungsi untuk auto-scroll
-    const scrollToBottom = () => {
-        chatArea.scrollTop = chatArea.scrollHeight;
-    };
+    // ... (sisa kode appendMessage, scrollToBottom, dan showHistory)
 
     // Membuka sidebar history
     const showHistory = async () => {
         try {
-            const response = await fetch(`${API_BASE_URL}/history`);
-            if (!response.ok) throw new Error('Gagal mengambil riwayat.');
+            const response = await fetch(`${API_BASE_URL}/history`); // UBAH INI
+            if (!response.ok) {
+                const errorBody = await response.text();
+                throw new Error(`Gagal mengambil riwayat. Status: ${response.status}. Pesan: ${errorBody}`);
+            }
             const conversations = await response.json();
             
             historyList.innerHTML = '';
@@ -95,22 +89,21 @@ document.addEventListener('DOMContentLoaded', () => {
             sidebarOverlay.classList.add('active');
         } catch (error) {
             console.error('Error fetching history:', error);
-            alert('Gagal mengambil riwayat percakapan.');
+            alert(`Gagal mengambil riwayat percakapan. Detail: ${error.message}`);
         }
     };
 
-    // Menutup sidebar
-    const closeSidebar = () => {
-        document.body.classList.remove('sidebar-open'); // Memicu layout untuk kembali normal
-        sidebarOverlay.classList.remove('active');
-    };
+    // ... (sisa kode closeSidebar, handleDelete)
 
     // Menghapus percakapan
     const handleDelete = async (id, listItemElement) => {
         if (!confirm('Anda yakin ingin menghapus percakapan ini secara permanen?')) return;
         try {
-            const response = await fetch(`${API_BASE_URL}/delete_conversation/${id}`, { method: 'DELETE' });
-            if (!response.ok) throw new Error('Gagal menghapus di server.');
+            const response = await fetch(`${API_BASE_URL}/delete_conversation/${id}`, { method: 'DELETE' }); // UBAH INI
+            if (!response.ok) {
+                const errorBody = await response.text();
+                throw new Error(`Gagal menghapus di server. Status: ${response.status}. Pesan: ${errorBody}`);
+            }
             
             listItemElement.remove();
             if (historyList.children.length === 0) {
@@ -121,15 +114,18 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         } catch (error) {
             console.error('Error deleting conversation:', error);
-            alert('Gagal menghapus percakapan.');
+            alert(`Gagal menghapus percakapan. Detail: ${error.message}`);
         }
     };
 
     // Memuat percakapan lama
     const loadConversation = async (id) => {
         try {
-            const response = await fetch(`${API_BASE_URL}/conversation/${id}`);
-            if (!response.ok) throw new Error('Gagal memuat percakapan.');
+            const response = await fetch(`${API_BASE_URL}/conversation/${id}`); // UBAH INI
+            if (!response.ok) {
+                const errorBody = await response.text();
+                throw new Error(`Gagal memuat percakapan. Status: ${response.status}. Pesan: ${errorBody}`);
+            }
             const messages = await response.json();
             
             currentConversationId = id;
@@ -141,10 +137,9 @@ document.addEventListener('DOMContentLoaded', () => {
             scrollToBottom();
         } catch (error) {
             console.error('Error loading conversation:', error);
+            appendMessage(`Gagal memuat percakapan. Detail: ${error.message}`, 'ai-system');
         }
     };
-
-    // --- EVENT LISTENERS ---
 
     // Listener untuk form utama
     promptForm.addEventListener('submit', async (e) => {
@@ -157,14 +152,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const typingIndicator = appendMessage('', 'ai', true);
 
         try {
-            const response = await fetch(`${API_BASE_URL}/ask`, {
+            const response = await fetch(`${API_BASE_URL}/ask`, { // UBAH INI
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ prompt: userText, conversation_id: currentConversationId }),
             });
             if (!response.ok) {
                 const errData = await response.json();
-                throw new Error(errData.answer || 'Network response was not ok');
+                throw new Error(errData.answer || `Network response was not ok. Status: ${response.status}`);
             }
             const data = await response.json();
             typingIndicator.remove();
