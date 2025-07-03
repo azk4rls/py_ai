@@ -373,7 +373,7 @@ body.sidebar-open .app-container {
     padding: 10px;
     border-radius: 5px;
     margin: 10px 0; /* Margin atas/bawah */
-    overflow-y: auto; /* KUNCI: Membuat scroll horizontal jika konten terlalu panjang */
+    overflow-y: hidden; /* KUNCI: Membuat scroll horizontal jika konten terlalu panjang */
     white-space: pre-wrap; /* Memastikan baris kode yang panjang akan wrap */
     word-wrap: break-word; /* Memastikan kata panjang dalam kode juga bisa dipotong */
     max-width: 100%; /* Penting: Pastikan blok kode tidak melebihi lebar kontainernya */
