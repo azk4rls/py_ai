@@ -50,13 +50,6 @@ body.sidebar-open .history-sidebar {
     margin-left: 0;
 }
 
-/* Pastikan body juga bisa menyusut dengan benar saat sidebar terbuka */
-body.sidebar-open .app-container {
-    margin-left: 320px; /* Dorong container utama */
-    width: calc(100% - 320px); /* Sesuaikan lebar */
-}
-
-
 .history-header {
     display: flex;
     justify-content: space-between;
@@ -405,10 +398,6 @@ body.sidebar-open .app-container {
     .history-sidebar {
         width: 280px;
         margin-left: -280px;
-    }
-    body.sidebar-open .app-container {
-        margin-left: 280px;
-        width: calc(100% - 280px);
     }
     .logo {
         font-size: 1.1rem; /* Sedikit lebih kecil */
