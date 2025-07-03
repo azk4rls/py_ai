@@ -386,6 +386,7 @@ body.sidebar-open .app-container {
     font-size: 0.9em;
     line-height: 1.4;
     display: block; /* Agar mengambil lebar penuh parent */
+    white-space: inherit; 
 }
 
 /* Styling untuk inline code (jika ada, biasanya `teks`) */
@@ -395,7 +396,7 @@ body.sidebar-open .app-container {
     border-radius: 3px;
     font-family: 'Consolas', 'Monaco', monospace;
     font-size: 0.9em;
-    white-space: nowrap; /* Untuk inline code, mungkin tidak perlu wrap */
+    /* white-space: nowrap; Untuk inline code, mungkin tidak perlu wrap */
 }
 
 
