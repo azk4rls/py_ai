@@ -9,6 +9,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeHistoryBtn = document.getElementById('close-history-btn');
     const historyList = document.getElementById('history-list');
     const sidebarOverlay = document.getElementById('sidebar-overlay');
+    const profileBtn = document.getElementById('profile-icon-btn');
+    const profileDropdown = document.getElementById('profile-dropdown');
+
 
     // Pastikan URL dasar API kosong untuk membuatnya relatif terhadap domain Vercel.
     const API_BASE_URL = ''; 
@@ -204,6 +207,22 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    if (profileBtn) {
+        profileBtn.addEventListener('click', (e) => {
+            e.stopPropagation(); // Mencegah event window di bawah terpicu langsung
+            profileDropdown.classList.toggle('active');
+        });
+    }
+
+    // Menutup dropdown jika klik di luar area menu
+    window.addEventListener('click', (e) => {
+        if (profileDropdown && profileDropdown.classList.contains('active')) {
+            if (!profileBtn.contains(e.target)) {
+                 profileDropdown.classList.remove('active');
+            }
+        }
+    });
+    
     // Listener untuk tombol-tombol di navbar dan sidebar
     newChatBtn.addEventListener('click', startNewChat);
     historyBtn.addEventListener('click', showHistory);

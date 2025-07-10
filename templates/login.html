@@ -1,0 +1,26 @@
+{% extends "layout.html" %}
+
+{% block title %}Login - Richatz.AI{% endblock %}
+
+{% block content %}
+    <form method="POST" action="{{ url_for('login') }}">
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" required>
+        </div>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" required>
+        </div>
+        <div class="form-extra">
+            <label class="remember-me">
+                <input type="checkbox" id="remember" name="remember">
+                <span class="checkmark"></span>
+                <span class="label-text">Remember Me</span>
+            </label>
+            <a href="{{ url_for('reset_request') }}" class="forgot-password">Forgot The Password?</a>
+        </div>
+        <button type="submit" class="btn-primary">LOGIN</button>
+    </form>
+    <p class="auth-switch">Don't Have an Account? <a href="{{ url_for('register') }}">Register Here</a></p>
+{% endblock %}

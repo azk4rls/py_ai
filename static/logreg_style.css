@@ -1,0 +1,218 @@
+/* static/styles.css */
+
+/* static/styles.css */
+
+/* --- TEMA BARU UNTUK HALAMAN LOGIN & REGISTER (VERSI PRESISI & RESPONSIVE) --- */
+
+/* Import Font dari Google */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+*{
+   box-sizing: border-box;
+}
+
+/* Tambahkan ini di mana saja di dalam styles.css */
+
+.back-arrow-btn {
+    position: absolute;
+    top: 25px;
+    left: 25px;
+    width: 40px;
+    height: 40px;
+    background-color: #f0f2f5;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #4a5568;
+    text-decoration: none;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.back-arrow-btn:hover {
+    background-color: #e2e8f0;
+    transform: scale(1.1);
+}
+
+.back-arrow-btn svg {
+    width: 20px;
+    height: 20px;
+}
+
+.auth-body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh; /* Gunakan min-height agar bisa di-scroll di layar kecil */
+    padding: 20px; /* Beri sedikit padding di body untuk layar kecil */
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(135deg, #DCF5FF 0%, #FFE8D2 100%);
+}
+
+.auth-container {
+    position: relative;
+    background-color: white;
+    padding: 40px;
+    border-radius: 24px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+}
+
+.auth-header {
+    margin-bottom: 30px;
+}
+
+.auth-header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #1a202c;
+    margin: 0;
+}
+
+.auth-header p {
+    color: #718096;
+    margin-top: 4px;
+    font-size: 1rem;
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #4a5568;
+}
+
+.form-group input[type="email"],
+.form-group input[type="password"] {
+    width: 100%;
+    padding: 12px 15px;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    background-color: #f7fafc;
+    color: #2d3748;
+    font-size: 1rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+}
+
+/* PERBAIKAN: Gunakan flexbox untuk mensejajarkan elemen */
+.form-extra {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.875rem;
+    margin-bottom: 25px;
+}
+
+/* Custom Checkbox */
+.remember-me {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+.remember-me input[type="checkbox"] { display: none; }
+.remember-me .checkmark {
+    width: 18px;
+    height: 18px;
+    border: 2px solid #cbd5e0;
+    border-radius: 5px;
+    display: inline-block;
+    position: relative;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+.remember-me input[type="checkbox"]:checked + .checkmark {
+    background-color: #6366f1;
+    border-color: #6366f1;
+}
+.remember-me .checkmark::after {
+    content: "";
+    position: absolute;
+    display: none;
+    left: 5px; top: 2px;
+    width: 5px; height: 10px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+.remember-me input[type="checkbox"]:checked + .checkmark::after { display: block; }
+.remember-me .label-text { color: #4a5568; font-weight: 500; }
+
+.forgot-password {
+    color: #6366f1;
+    font-weight: 500;
+    text-decoration: none;
+}
+.forgot-password:hover { text-decoration: underline; }
+
+.btn-primary {
+    width: 100%;
+    padding: 15px;
+    border: none;
+    border-radius: 12px;
+    background-color: #ffeadb;
+    color: #3d2c21;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.auth-switch {
+    text-align: center;
+    margin-top: 25px;
+    font-size: 0.9rem;
+    color: #718096;
+}
+.auth-switch a { color: #6366f1; font-weight: 500; }
+
+/* --- PERBAIKAN: Bagian Responsif --- */
+@media (max-width: 480px) {
+    .auth-body {
+        padding: 10px; /* Kurangi padding di body agar form tidak terlalu mepet */
+    }
+    .auth-container {
+        padding: 25px; /* Kurangi padding di dalam container form */
+    }
+    .auth-header h1 {
+        font-size: 2rem; /* Kecilkan judul */
+    }
+    .auth-header p {
+        font-size: 0.9rem; /* Kecilkan sub-judul */
+    }
+    /* Pastikan bagian remember me dan lupa password tidak aneh */
+    .form-extra {
+        flex-direction: column; /* Susun ke bawah di layar sangat kecil */
+        align-items: flex-start;
+        gap: 15px;
+    }
+}
+
+/* Flash Messages (Notifikasi) */
+.alert { padding: 1rem; margin-bottom: 1rem; border-radius: 6px; text-align: center; }
+.alert-success { background-color: #166534; color: #dcfce7; }
+.alert-danger { background-color: #991b1b; color: #fee2e2; }
+.alert-info { background-color: #1e40af; color: #dbeafe; }
+.alert-warning { background-color: #9a3412; color: #ffedd5; }

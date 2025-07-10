@@ -5,3 +5,8 @@ google-generativeai
 requests
 gunicorn
 psycopg2-binary
+Flask-SQLAlchemy
+google-generativeai
+bcrypt  # Untuk hashing password
+Flask-Login # Untuk manajemen sesi
+Flask-Mail

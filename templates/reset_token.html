@@ -1,0 +1,12 @@
+{% extends "layout.html" %}
+{% block title %}Buat Password Baru{% endblock %}
+{% block content %}
+    <h2>Buat Password Baru</h2>
+    <form method="POST" action="">
+        <div class="form-group">
+            <label for="password">Password Baru</label>
+            <input type="password" id="password" name="password" required>
+        </div>
+        <button type="submit" class="btn-primary">Reset Password</button>
+    </form>
+{% endblock %}
