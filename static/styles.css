@@ -12,6 +12,66 @@ body {
     /* overflow-x: hidden; <-- Ini sudah ada, pastikan tidak ada elemen yang memaksakan lebar */
 }
 
+/* --- Styling untuk Menu Profil & Dropdown Logout --- */
+
+.profile-menu {
+    position: relative; /* Penting untuk posisi dropdown */
+}
+
+/* Mengubah .avatar menjadi tombol yang bisa diklik */
+.avatar {
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: border-color 0.2s;
+}
+
+.avatar:hover {
+    border-color: #445aff;
+}
+
+.dropdown-menu {
+    display: none; /* Sembunyi secara default */
+    position: absolute;
+    top: 55px; /* Jarak dari ikon avatar */
+    right: 0;
+    background-color: #202123;
+    border: 1px solid #444;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    width: 240px;
+    z-index: 1000;
+}
+
+/* Class 'active' ini ditambahkan oleh JavaScript untuk memunculkan menu */
+.dropdown-menu.active {
+    display: block;
+}
+
+.dropdown-header {
+    padding: 1rem;
+    border-bottom: 1px solid #444;
+    color: #8e8e8e;
+    font-size: 0.9rem;
+    word-wrap: break-word;
+}
+
+.dropdown-header strong {
+    color: #fff;
+}
+
+.dropdown-item {
+    display: block;
+    padding: 0.75rem 1rem;
+    color: #ececec;
+    text-decoration: none;
+}
+
+.dropdown-item:hover {
+    background-color: #445aff;
+    color: white;
+    text-decoration: none;
+}
+
 /* --- History Sidebar & Overlay --- */
 .sidebar-overlay {
     position: fixed;

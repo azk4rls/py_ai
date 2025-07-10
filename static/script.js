@@ -207,21 +207,42 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    if (profileBtn) {
+    // if (profileBtn) {
+    //     profileBtn.addEventListener('click', (e) => {
+    //         e.stopPropagation(); // Mencegah event window di bawah terpicu langsung
+    //         profileDropdown.classList.toggle('active');
+    //     });
+    // }
+
+    // // Menutup dropdown jika klik di luar area menu
+    // window.addEventListener('click', (e) => {
+    //     if (profileDropdown && profileDropdown.classList.contains('active')) {
+    //         if (!profileBtn.contains(e.target)) {
+    //              profileDropdown.classList.remove('active');
+    //         }
+    //     }
+    // });
+
+     // --- TAMBAHAN UNTUK DROPDOWN PROFIL ---
+    const profileBtn = document.getElementById('profile-icon-btn');
+    const profileDropdown = document.getElementById('profile-dropdown');
+
+    if (profileBtn && profileDropdown) {
         profileBtn.addEventListener('click', (e) => {
             e.stopPropagation(); // Mencegah event window di bawah terpicu langsung
             profileDropdown.classList.toggle('active');
         });
-    }
 
-    // Menutup dropdown jika klik di luar area menu
-    window.addEventListener('click', (e) => {
-        if (profileDropdown && profileDropdown.classList.contains('active')) {
-            if (!profileBtn.contains(e.target)) {
-                 profileDropdown.classList.remove('active');
+        // Menutup dropdown jika klik di luar area menu
+        window.addEventListener('click', (e) => {
+            if (profileDropdown.classList.contains('active')) {
+                // Cek apakah yang diklik bukan tombol profil itu sendiri
+                if (!profileBtn.contains(e.target)) {
+                     profileDropdown.classList.remove('active');
+                }
             }
-        }
-    });
+        });
+    }
     
     // Listener untuk tombol-tombol di navbar dan sidebar
     newChatBtn.addEventListener('click', startNewChat);
