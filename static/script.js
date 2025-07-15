@@ -1,10 +1,10 @@
-// static/script.js
+// static/script.js (Versi Final yang Sudah Diperbaiki)
 
 document.addEventListener('DOMContentLoaded', () => {
-    // === Seleksi Semua Elemen DOM di Satu Tempat ===
+    // === 1. Seleksi Elemen DOM ===
+    const chatContainer = document.getElementById('chat-area');
     const promptForm = document.getElementById('prompt-form');
     const promptInput = document.getElementById('prompt-input');
-    const chatArea = document.getElementById('chat-area');
     const newChatBtn = document.getElementById('new-chat-btn');
     const historyBtn = document.getElementById('history-btn');
     const historySidebar = document.getElementById('history-sidebar');
@@ -13,24 +13,21 @@ document.addEventListener('DOMContentLoaded', () => {
     const sidebarOverlay = document.getElementById('sidebar-overlay');
     const profileBtn = document.getElementById('profile-icon-btn');
     const profileDropdown = document.getElementById('profile-dropdown');
+    const menuBtn = document.getElementById('menu-btn'); // Tombol menu mobile
 
-    // === State Aplikasi ===
-    const API_BASE_URL = ''; 
+    // === 2. State Aplikasi ===
     let currentConversationId = null;
     let isLoading = false;
 
-    // === Fungsi-fungsi Inti ===
+    // === 3. Fungsi-fungsi Inti ===
 
-    /** Menampilkan pesan di UI, dengan parsing Markdown untuk AI. */
+    /** Menampilkan pesan di UI, dengan parsing Markdown untuk AI */
     const appendMessage = (text, sender) => {
+        const typingIndicator = chatContainer.querySelector('.typing-indicator');
+        if (typingIndicator) typingIndicator.remove();
+
         const messageDiv = document.createElement('div');
-        messageDiv.classList.add('chat-message', `${sender}-message`);
-        
-        // Hapus indikator loading jika ada sebelum menambahkan pesan baru
-        const typingIndicator = chatArea.querySelector('.typing');
-        if (typingIndicator) {
-            typingIndicator.parentElement.remove();
-        }
+        messageDiv.className = `chat-message ${sender}-message`;
 
         if (sender === 'ai' && window.marked) {
             messageDiv.innerHTML = marked.parse(text, { sanitize: true });
@@ -38,31 +35,23 @@ document.addEventListener('DOMContentLoaded', () => {
             messageDiv.textContent = text;
         }
         
-        chatArea.appendChild(messageDiv);
-        scrollToBottom();
+        chatContainer.appendChild(messageDiv);
+        chatContainer.scrollTop = chatContainer.scrollHeight;
     };
     
-    /** Menampilkan indikator "mengetik...". */
+    /** Menampilkan indikator "mengetik..." */
     const showTypingIndicator = () => {
-        const typingDiv = document.createElement('div');
-        typingDiv.classList.add('chat-message', 'ai-message', 'typing');
-        typingDiv.innerHTML = `
-            <div class="typing-dot"></div>
-            <div class="typing-dot"></div>
-            <div class="typing-dot"></div>`;
-        chatArea.appendChild(typingDiv);
-        scrollToBottom();
+        const indicator = document.createElement('div');
+        indicator.className = 'chat-message ai-message typing-indicator';
+        indicator.innerHTML = `<div class="typing"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>`;
+        chatContainer.appendChild(indicator);
+        chatContainer.scrollTop = chatContainer.scrollHeight;
     };
 
-    /** Fungsi untuk auto-scroll ke bawah */
-    const scrollToBottom = () => {
-        chatArea.scrollTop = chatArea.scrollHeight;
-    };
-
-    /** Mengambil dan menampilkan daftar history di sidebar. */
+    /** Mengambil dan menampilkan daftar history di sidebar */
     const fetchAndRenderHistory = async () => {
         try {
-            const response = await fetch(`${API_BASE_URL}/history`);
+            const response = await fetch('/history');
             if (!response.ok) throw new Error('Gagal mengambil riwayat.');
             
             const conversations = await response.json();
@@ -76,6 +65,10 @@ document.addEventListener('DOMContentLoaded', () => {
             conversations.forEach(conv => {
                 const li = document.createElement('li');
                 li.dataset.id = conv.id;
+                // Menambahkan highlight jika ID-nya sama dengan chat yang sedang aktif
+                if (conv.id == currentConversationId) {
+                    li.classList.add('active');
+                }
                 li.innerHTML = `
                     <span class="history-title">${conv.title}</span>
                     <button class="delete-chat-btn" data-id="${conv.id}">
@@ -90,129 +83,127 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
     
-    /** Memulai sesi chat baru dari awal. */
-    const startNewChat = async () => {
-        try {
-            const response = await fetch(`${API_BASE_URL}/new_chat`, { method: 'POST' });
-            if (!response.ok) throw new Error('Gagal membuat chat baru di server.');
-
-            const data = await response.json();
-            currentConversationId = data.conversation_id;
-            
-            chatArea.innerHTML = ''; 
-            appendMessage("Percakapan baru dimulai. Silakan ajukan pertanyaan Anda.", 'ai-system');
-            promptInput.focus();
-            
-            await fetchAndRenderHistory(); // Muat ulang history untuk menampilkan "Percakapan Baru"
-        } catch (error) {
-            console.error('Error starting new chat:', error);
-            appendMessage(`Gagal memulai percakapan baru.`, 'ai-system');
-        }
+    /** Memulai sesi chat baru dari awal */
+    const startNewChat = () => {
+        currentConversationId = null;
+        chatContainer.innerHTML = '';
+        appendMessage('Halo! Selamat datang di Richatz.AI. Silakan ajukan pertanyaan Anda.', 'ai-system');
+        promptInput.focus();
+        fetchAndRenderHistory(); // Update sidebar untuk menghapus highlight
+        toggleSidebar(true); // Selalu tutup sidebar saat chat baru dimulai
     };
 
-    /** Memuat konten dari chat yang dipilih di history. */
+    /** Memuat konten dari chat yang dipilih di history */
     const loadConversation = async (id) => {
+        if (!id) return;
         currentConversationId = id;
-        chatArea.innerHTML = '';
-        showTypingIndicator(); // Tampilkan loading saat memuat
+        chatContainer.innerHTML = '';
+        showTypingIndicator();
 
         try {
-            const response = await fetch(`${API_BASE_URL}/conversation/${id}`);
+            const response = await fetch(`/conversation/${id}`);
             if (!response.ok) throw new Error('Gagal memuat percakapan.');
             
             const messages = await response.json();
-            chatArea.innerHTML = ''; // Hapus loading lagi
+            chatContainer.innerHTML = ''; 
             
             messages.forEach(msg => {
                 appendMessage(msg.content, msg.role === 'assistant' ? 'ai' : 'user');
             });
             promptInput.focus();
+            await fetchAndRenderHistory(); // Muat ulang history untuk menandai item aktif
         } catch (error) {
-            chatArea.innerHTML = '';
+            chatContainer.innerHTML = '';
             appendMessage(`Gagal memuat percakapan. ${error.message}`, 'ai-system');
-            console.error('Error loading conversation:', error);
         }
     };
 
     /** Menghapus percakapan */
     const handleDelete = async (id, listItemElement) => {
-        if (!confirm('Anda yakin ingin menghapus percakapan ini?')) return;
+        if (!confirm('Anda yakin ingin menghapus percakapan ini secara permanen?')) return;
         try {
-            await fetch(`${API_BASE_URL}/delete_conversation/${id}`, { method: 'DELETE' });
+            await fetch(`/delete_conversation/${id}`, { method: 'DELETE' });
             listItemElement.remove();
             if (historyList.children.length === 0) {
                 historyList.innerHTML = '<li class="empty-history">Belum ada riwayat.</li>';
             }
-            if (currentConversationId === id) {
-                currentConversationId = null;
-                chatArea.innerHTML = '';
-                appendMessage('Pilih percakapan dari history atau buat yang baru.', 'ai-system');
+            if (currentConversationId == id) {
+                startNewChat();
             }
         } catch (error) {
             console.error('Error deleting conversation:', error);
+            alert('Gagal menghapus percakapan.');
         }
     };
 
-    /** Mengatur buka/tutup sidebar di mobile. */
+    /** Mengatur buka/tutup sidebar di mobile */
     const toggleSidebar = (forceClose = false) => {
+        const isOpen = document.body.classList.contains('sidebar-open');
         if (forceClose) {
             document.body.classList.remove('sidebar-open');
-            sidebarOverlay.classList.remove('active');
         } else {
             document.body.classList.toggle('sidebar-open');
-            sidebarOverlay.classList.toggle('active');
         }
     };
     
-    // === Event Listeners (Pengatur Fungsi Klik) ===
+    // === 4. Event Listeners ===
 
-    // Listener untuk form utama saat mengirim pesan
+    /** Mengirim pesan ke backend */
     promptForm.addEventListener('submit', async (e) => {
         e.preventDefault(); 
         const userText = promptInput.value.trim();
         if (userText === '' || isLoading) return;
 
-        if (!currentConversationId) {
-            await startNewChat();
-        }
-        
         isLoading = true;
         appendMessage(userText, 'user'); 
-        promptInput.value = '';
+        promptInput.value = ''; 
         showTypingIndicator();
 
+        let conversationIdForRequest = currentConversationId;
+
         try {
-            const response = await fetch(`${API_BASE_URL}/ask`, { 
+            // Jika belum ada chat, buat dulu secara diam-diam
+            if (!conversationIdForRequest) {
+                const newChatResponse = await fetch('/new_chat', { method: 'POST' });
+                const newChatData = await newChatResponse.json();
+                if (!newChatData.conversation_id) throw new Error('Gagal membuat sesi chat baru.');
+                currentConversationId = newChatData.conversation_id;
+                conversationIdForRequest = currentConversationId;
+            }
+
+            const response = await fetch('/ask', { 
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ prompt: userText, conversation_id: currentConversationId }),
+                body: JSON.stringify({ prompt: userText, conversation_id: conversationIdForRequest }),
             });
 
-            if (!response.ok) throw new Error('Respons server tidak baik.');
+            if (!response.ok) throw new Error('Respons dari server tidak baik.');
             const data = await response.json();
             appendMessage(data.answer, 'ai');
 
-            // Jika judulnya "Percakapan Baru", perbarui dengan prompt pertama
-            const activeHistoryItem = historyList.querySelector(`li[data-id="${currentConversationId}"] .history-title`);
-            if (activeHistoryItem && activeHistoryItem.textContent === "Percakapan Baru") {
-                activeHistoryItem.textContent = userText.substring(0, 25) + (userText.length > 25 ? '...' : '');
-            }
+            await fetchAndRenderHistory(); // Selalu update history setelah ada pesan baru
 
         } catch (error) {
-            appendMessage(`Maaf, terjadi kesalahan: ${error.message}`, 'ai-system');
-            console.error('Fetch Error:', error); 
+            appendMessage(`Maaf, terjadi kesalahan: ${error.message}`, 'ai-system'); 
         } finally {
             isLoading = false;
         }
     });
 
-    // Listener untuk tombol-tombol
+    /** Listener untuk tombol-tombol utama */
     newChatBtn.addEventListener('click', startNewChat);
-    historyBtn.addEventListener('click', fetchAndRenderHistory);
+    historyBtn.addEventListener('click', async () => {
+        await fetchAndRenderHistory();
+        toggleSidebar();
+    });
+    menuBtn.addEventListener('click', async () => {
+        await fetchAndRenderHistory();
+        toggleSidebar();
+    });
     closeHistoryBtn.addEventListener('click', () => toggleSidebar(true));
     sidebarOverlay.addEventListener('click', () => toggleSidebar(true));
 
-    // Listener untuk daftar history (memuat dan menghapus)
+    /** Listener untuk daftar history (memuat dan menghapus) */
     historyList.addEventListener('click', (e) => {
         const targetListItem = e.target.closest('li[data-id]');
         if (!targetListItem) return;
@@ -227,7 +218,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
     
-    // Listener untuk dropdown profil
+    /** Listener untuk dropdown profil */
     if (profileBtn && profileDropdown) {
         profileBtn.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -240,7 +231,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // === Inisialisasi Aplikasi ===
+    // === 5. Inisialisasi Aplikasi ===
     fetchAndRenderHistory();
-    appendMessage('Selamat datang! Pilih percakapan dari history atau klik "New +" untuk memulai.', 'ai-system');
+    startNewChat(); // Memulai dengan sesi chat baru yang kosong
 });
