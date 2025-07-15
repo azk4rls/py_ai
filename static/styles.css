@@ -241,7 +241,6 @@ body.sidebar-open .history-sidebar {
     display: flex;
     align-items: center;
     gap: 12px;
-    
     flex-grow: 1;
     flex-shrink: 1;
     justify-content: flex-end;
@@ -274,7 +273,7 @@ body.sidebar-open .history-sidebar {
     background-color: #445aff;
     border-radius: 50%;
     background-image: url("R.AI.jpg");
-    background-size: 100%;
+    background-size: 110%;
     background-position: center;
     background-repeat: no-repeat;
     flex-shrink: 0; /* Pastikan avatar tidak menyusut */
