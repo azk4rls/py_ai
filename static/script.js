@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const sidebarOverlay = document.getElementById('sidebar-overlay');
     const profileBtn = document.getElementById('profile-icon-btn');
     const profileDropdown = document.getElementById('profile-dropdown');
-    const menuBtn = document.getElementById('menu-btn'); // Tombol menu mobile
+    // const menuBtn = document.getElementById('menu-btn'); // Tombol menu mobile
 
     // === 2. State Aplikasi ===
     let currentConversationId = null;
@@ -196,10 +196,10 @@ document.addEventListener('DOMContentLoaded', () => {
         await fetchAndRenderHistory();
         toggleSidebar();
     });
-    menuBtn.addEventListener('click', async () => {
-        await fetchAndRenderHistory();
-        toggleSidebar();
-    });
+    // menuBtn.addEventListener('click', async () => {
+    //     await fetchAndRenderHistory();
+    //     toggleSidebar();
+    // });
     closeHistoryBtn.addEventListener('click', () => toggleSidebar(true));
     sidebarOverlay.addEventListener('click', () => toggleSidebar(true));
 
