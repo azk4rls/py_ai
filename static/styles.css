@@ -1,16 +1,18 @@
-/* static/styles.css (FULL SCRIPT FINAL) */
+/* static/styles.css (FINAL MODERN THEME) */
 
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap');
+/* === 1. FOUNDATION & COLOR VARIABLES === */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
 
 :root {
-    --bg-primary: #121212;
-    --bg-secondary: #1E1E1E;
-    --bg-tertiary: #343541;
-    --text-primary: #F1F1F1;
-    --text-secondary: #8e8e8e;
-    --border-color: #444;
-    --accent-color: #445aff;
-    --danger-color: #ff4d4d;
+    --bg-primary: #171717;
+    --bg-secondary: #212121;
+    --bg-tertiary: #2d2d2d;
+    --text-primary: #f5f5f5;
+    --text-secondary: #a3a3a3;
+    --border-color: #3a3a3a;
+    --accent-color: #6366f1; /* Indigo */
+    --accent-hover: #4f46e5;
+    --danger-color: #ef4444;
 }
 
 * {
@@ -25,62 +27,77 @@ html, body {
 }
 
 body {
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Inter', sans-serif;
     background-color: var(--bg-primary);
     color: var(--text-primary);
     display: flex;
     height: 100vh;
 }
 
-/* --- History Sidebar & Overlay (DESAIN BARU) --- */
+/* --- 2. AUTHENTICATION PAGES (Login/Register) --- */
+.auth-body {
+    justify-content: center;
+    align-items: center;
+}
+
+.auth-container {
+    background-color: var(--bg-secondary);
+    padding: 2rem 3rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    width: 100%;
+    max-width: 420px;
+    border: 1px solid var(--border-color);
+}
+
+.auth-container h2 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    color: var(--text-primary);
+}
+
+/* --- 3. HISTORY SIDEBAR & OVERLAY --- */
 .history-sidebar {
-    width: 300px;
-    height: 100vh;
+    width: 280px;
+    height: 100%;
     background-color: var(--bg-secondary);
     border-right: 1px solid var(--border-color);
-    padding: 0; /* Padding diatur per bagian */
     display: flex;
     flex-direction: column;
     flex-shrink: 0;
     z-index: 1001;
     position: fixed;
     top: 0;
-    left: -300px; /* Sembunyi di awal */
+    left: -280px; /* Hidden by default */
     transition: left 0.35s ease-in-out;
 }
 
 body.sidebar-open .history-sidebar {
-    left: 0;
+    left: 0; /* Shown when class is active */
 }
 
 .history-header {
     padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--border-color);
     display: flex;
     justify-content: space-between;
     align-items: center;
     flex-shrink: 0;
-    border-bottom: 1px solid var(--border-color);
-}
-
-.history-header h3 {
-    font-size: 1.1rem;
-    font-weight: 500;
 }
 
 .close-btn {
     background: none;
     border: none;
     color: var(--text-secondary);
-    font-size: 2.5rem;
+    font-size: 1.5rem;
     cursor: pointer;
-    line-height: 1;
 }
 
 .history-list {
     list-style: none;
     overflow-y: auto;
-    flex-grow: 1;
     padding: 0.75rem;
+    flex-grow: 1;
 }
 
 .history-list li {
@@ -92,27 +109,20 @@ body.sidebar-open .history-sidebar {
     align-items: center;
     gap: 10px;
     color: var(--text-secondary);
-    transition: background-color 0.2s, color 0.2s, border-color 0.2s;
     border: 1px solid transparent;
-}
-
-.history-list li::before {
-    content: '\f086'; /* Ikon comment dari Font Awesome */
-    font-family: 'Font Awesome 6 Free';
-    font-weight: 400;
+    transition: all 0.2s ease-in-out;
 }
 
 .history-list li:hover {
     background-color: var(--bg-tertiary);
     color: var(--text-primary);
-    border-color: var(--border-color);
+    transform: translateX(5px);
 }
 
 .history-title {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    flex-grow: 1;
 }
 
 .sidebar-overlay {
@@ -133,18 +143,17 @@ body.sidebar-open .history-sidebar {
     visibility: visible;
 }
 
-/* --- Container Aplikasi Utama --- */
+/* --- 4. MAIN APP CONTAINER & HEADER --- */
 .app-container {
     width: 100%;
     height: 100vh;
     display: flex;
     flex-direction: column;
-    background-color: var(--bg-secondary);
+    background-color: var(--bg-primary);
 }
 
-/* --- Navbar (Atas) --- */
 .main-header {
-    background-color: var(--bg-primary);
+    background-color: var(--bg-secondary);
     padding: 1rem 1.5rem;
     display: flex;
     justify-content: space-between;
@@ -153,8 +162,34 @@ body.sidebar-open .history-sidebar {
     border-bottom: 1px solid var(--border-color);
 }
 
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.menu-button {
+    display: none; /* Hidden on desktop */
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.menu-button:hover {
+    background-color: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+
 .logo {
-    font-size: 1.5rem;
+    font-size: 1.4rem;
     font-weight: 700;
     color: var(--text-primary);
 }
@@ -162,39 +197,46 @@ body.sidebar-open .history-sidebar {
 .main-nav {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 0.75rem;
 }
 
 .nav-button {
     background-color: var(--bg-tertiary);
     color: var(--text-primary);
     border: none;
-    padding: 10px 20px;
+    padding: 0.6rem 1.2rem;
     border-radius: 8px;
     cursor: pointer;
     font-size: 0.9rem;
     font-weight: 500;
-    transition: background-color 0.2s;
+    transition: background-color 0.2s, transform 0.2s;
 }
 
 .nav-button:hover {
-    background-color: #4a4a4a;
+    background-color: #3f3f3f;
+    transform: translateY(-2px);
+}
+
+/* --- 5. PROFILE DROPDOWN MENU --- */
+.profile-menu {
+    position: relative;
 }
 
 .avatar {
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    background-image: url("R.AI.jpg"); /* Ganti dengan url_for jika dirender dari template lain */
+    cursor: pointer;
+    border: 2px solid var(--border-color);
     background-size: cover;
     background-position: center;
-    flex-shrink: 0;
-    border: 2px solid var(--border-color);
-    cursor: pointer;
+    transition: all 0.2s;
 }
 
-.profile-menu {
-    position: relative;
+.avatar:hover,
+.dropdown-menu.active ~ .avatar {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 10px rgba(99, 102, 241, 0.5);
 }
 
 .dropdown-menu {
@@ -202,16 +244,22 @@ body.sidebar-open .history-sidebar {
     position: absolute;
     top: 55px;
     right: 0;
-    background-color: #2a2a2a;
+    background-color: var(--bg-tertiary);
     border: 1px solid var(--border-color);
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    border-radius: 12px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
     width: 240px;
     z-index: 1001;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
 }
 
 .dropdown-menu.active {
     display: block;
+    opacity: 1;
+    transform: translateY(0);
 }
 
 .dropdown-header {
@@ -222,13 +270,18 @@ body.sidebar-open .history-sidebar {
     word-break: break-all;
 }
 
+.dropdown-header strong {
+    color: var(--text-primary);
+}
+
 .dropdown-item {
     display: flex;
     align-items: center;
     gap: 0.75rem;
     padding: 0.75rem 1rem;
-    color: #ececec;
+    color: var(--text-primary);
     text-decoration: none;
+    transition: background-color 0.2s;
 }
 
 .dropdown-item:hover {
@@ -236,27 +289,32 @@ body.sidebar-open .history-sidebar {
     color: white;
 }
 
-/* --- Area Chat (Tengah) --- */
+/* --- 6. CHAT AREA --- */
 .chat-area {
     flex-grow: 1;
-    padding: 24px;
+    padding: 1.5rem;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
-    gap: 16px;
-}
-
-.chat-area:not(:has(.chat-message)) .ai-system-message {
-    margin: auto;
-    text-align: center;
+    gap: 1.25rem;
 }
 
 .chat-message {
-    padding: 12px 18px;
+    padding: 0.75rem 1.25rem;
     border-radius: 18px;
     max-width: 80%;
     line-height: 1.6;
-    word-wrap: break-word; 
+    word-wrap: break-word;
+    opacity: 0;
+    transform: translateY(10px);
+    animation: message-fade-in 0.4s forwards;
+}
+
+@keyframes message-fade-in {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .user-message {
@@ -274,24 +332,18 @@ body.sidebar-open .history-sidebar {
 }
 
 .ai-system-message {
+    margin: auto;
+    text-align: center;
     align-self: center;
     color: var(--text-secondary);
+    font-size: 0.9rem;
 }
 
-.chat-message pre {
-    background-color: var(--bg-primary);
-    color: #f8f8f2;
-    padding: 1rem;
-    border-radius: 8px;
-    overflow-x: auto;
-    border: 1px solid var(--border-color);
-}
-
-/* --- Footer (Input) --- */
+/* --- 7. FOOTER & INPUT BAR --- */
 .main-footer {
-    background-color: var(--bg-primary);
     padding: 1rem 1.5rem;
     flex-shrink: 0;
+    background-color: var(--bg-primary);
     border-top: 1px solid var(--border-color);
 }
 
@@ -300,10 +352,16 @@ body.sidebar-open .history-sidebar {
     align-items: center;
     background-color: var(--bg-tertiary);
     border-radius: 12px;
-    padding: 8px;
+    padding: 0.5rem;
     max-width: 800px;
     margin: 0 auto;
     border: 1px solid var(--border-color);
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.prompt-container:focus-within {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 10px rgba(99, 102, 241, 0.3);
 }
 
 #prompt-input {
@@ -311,7 +369,7 @@ body.sidebar-open .history-sidebar {
     border: none;
     background: transparent;
     outline: none;
-    padding: 10px;
+    padding: 0.75rem;
     font-size: 1rem;
     color: var(--text-primary);
     resize: none;
@@ -320,40 +378,32 @@ body.sidebar-open .history-sidebar {
 
 .prompt-container button {
     background-color: var(--accent-color);
+    color: #FFFFFF;
     border: none;
     border-radius: 8px;
     cursor: pointer;
-    width: 48px;
-    height: 48px;
+    width: 40px;
+    height: 40px;
     display: flex;
     justify-content: center;
     align-items: center;
+    transition: background-color 0.2s;
     flex-shrink: 0;
 }
 
-/* --- Desain Responsif --- */
+.prompt-container button:hover {
+    background-color: var(--accent-hover);
+}
+
+/* --- 8. RESPONSIVE DESIGN --- */
 @media (max-width: 768px) {
     body {
-        display: block;
+        display: block; /* Allows sidebar to overlay */
+    }
+    .menu-button {
+        display: flex; /* Show the menu button on mobile */
     }
     .main-header {
-        justify-content: flex-start;
-        gap: 1rem;
-    }
-    .logo {
-        display: block;
-        font-size: 1.2rem;
-    }
-    .main-nav {
-        margin-left: auto;
-    }
-    .main-header::before {
-        content: '\f0c9';
-        font-family: 'Font Awesome 6 Free';
-        font-weight: 900;
-        font-size: 1.2rem;
-        cursor: pointer;
-        padding: 8px;
-        color: var(--text-secondary);
+        padding: 0.75rem 1rem;
     }
 }
