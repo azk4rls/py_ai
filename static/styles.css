@@ -1,17 +1,18 @@
-/* static/styles.css (TEMA FUTURISTIK BARU) */
+/* static/styles.css (VERSI FINAL LENGKAP) */
 
-/* === 1. FONDASI & VARIABEL WARNA === */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
 
+/* --- 1. FONDASI & VARIABEL WARNA --- */
 :root {
-    --bg-color: #02001a;
-    --glass-bg: rgba(255, 255, 255, 0.05);
-    --glass-border: rgba(255, 255, 255, 0.1);
-    --text-primary: #f0f0f5;
-    --text-secondary: #a3a3c2;
-    --accent-glow: #00ffff; /* Cyan Neon */
-    --accent-glow-dark: #00b8b8;
-    --accent-user: #8a2be2; /* BlueViolet */
+    --bg-primary: #181818;
+    --bg-secondary: #212121;
+    --bg-tertiary: #2d2d2d;
+    --text-primary: #e5e7eb;
+    --text-secondary: #9ca3af;
+    --border-color: #3a3a3a;
+    --accent-color: #6366f1;
+    --accent-hover: #4f46e5;
+    --danger-color: #ef4444;
 }
 
 * {
@@ -22,177 +23,421 @@
 
 body {
     font-family: 'Inter', sans-serif;
-    background-color: var(--bg-color);
+    background-color: var(--bg-primary);
     color: var(--text-primary);
     display: flex;
     height: 100vh;
     overflow: hidden;
-    position: relative; /* Diperlukan untuk background aurora */
 }
 
-/* --- 2. LATAR BELAKANG AURORA (ANIMASI) --- */
-body::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: radial-gradient(circle at 15% 25%, var(--accent-user) 0%, transparent 20%),
-                radial-gradient(circle at 85% 75%, var(--accent-glow) 0%, transparent 25%);
-    filter: blur(100px);
-    z-index: -1;
-    animation: aurora-flow 20s infinite alternate;
-}
-
-@keyframes aurora-flow {
-    from { transform: rotate(0deg) scale(1.2); }
-    to { transform: rotate(90deg) scale(1.5); }
-}
-
-/* --- 3. GAYA GLASSMORPHISM UMUM --- */
-.glass-effect {
-    background: var(--glass-bg);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border-radius: 16px;
-    border: 1px solid var(--glass-border);
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-}
-
-/* --- 4. SIDEBAR HISTORY --- */
+/* --- 2. SIDEBAR HISTORY --- */
 .history-sidebar {
     width: 280px;
     height: 100%;
+    background-color: var(--bg-secondary);
+    border-right: 1px solid var(--border-color);
     display: flex;
     flex-direction: column;
-    transition: margin-left 0.3s ease;
+    transition: margin-left 0.3s ease-in-out;
     flex-shrink: 0;
     z-index: 1000;
 }
-.history-header, .history-list li {
-    background: transparent; /* Hapus background solid */
-    border: none;
-}
-.history-header { padding: 1.5rem; border-bottom: 1px solid var(--glass-border); }
-.history-list { list-style: none; overflow-y: auto; padding: 0.5rem; flex-grow: 1; }
-.history-list li {
-    padding: 0.75rem 1rem; margin: 0.25rem 0.5rem; border-radius: 8px;
-    cursor: pointer; color: var(--text-secondary); transition: all 0.2s;
-}
-.history-list li:hover { background-color: var(--glass-bg); color: var(--text-primary); }
-.history-list li.active { background-color: var(--accent-glow); color: black; font-weight: 500; }
-.history-title { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-/* --- 5. CONTAINER APLIKASI UTAMA --- */
-.app-container {
-    flex-grow: 1; height: 100vh; display: flex; flex-direction: column; min-width: 0;
-}
-
-/* --- 6. HEADER UTAMA --- */
-.main-header {
-    margin: 1rem 1.5rem 0 1.5rem;
-    padding: 0.75rem 1.5rem;
+.history-header {
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--border-color);
     display: flex;
     justify-content: space-between;
     align-items: center;
     flex-shrink: 0;
 }
-.logo { font-size: 1.25rem; font-weight: 700; color: var(--text-primary); }
-.main-nav { display: flex; align-items: center; gap: 0.75rem; }
-.nav-button {
-    background-color: transparent; color: var(--text-secondary);
-    border: 1px solid var(--glass-border);
-    padding: 0.5rem 1rem; border-radius: 20px;
-    cursor: pointer; font-weight: 500; transition: all 0.2s;
-}
-.nav-button:hover { background-color: var(--glass-bg); color: var(--text-primary); border-color: var(--accent-glow); }
-.profile-menu { position: relative; }
-.avatar {
-    width: 36px; height: 36px; border-radius: 50%; cursor: pointer;
-    border: 2px solid var(--glass-border); transition: all 0.2s;
-    background-image: url("R.AI.jpg"); background-size: cover;
-}
-.avatar:hover, .dropdown-menu.active ~ .avatar {
-    border-color: var(--accent-glow);
-    box-shadow: 0 0 10px var(--accent-glow);
-}
-.dropdown-menu { right: 0; top: 50px; }
 
-/* --- 7. AREA CHAT --- */
+.history-header h3 {
+    font-size: 1.1rem;
+}
+
+.close-btn {
+    color: var(--text-secondary);
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+.history-list {
+    list-style: none;
+    overflow-y: auto;
+    padding: 0.75rem;
+    flex-grow: 1;
+}
+
+.history-list li {
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.25rem;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--text-secondary);
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.history-list li:hover {
+    background-color: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+
+.history-list li.active {
+    background-color: var(--accent-color);
+    color: white;
+    font-weight: 500;
+}
+
+.history-title {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex-grow: 1;
+    margin-right: 1rem;
+}
+
+.delete-chat-btn {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+}
+
+.delete-chat-btn:hover {
+    background-color: var(--bg-tertiary);
+    color: var(--danger-color);
+}
+
+.sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s;
+}
+
+.sidebar-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* --- 3. HEADER & NAVIGASI --- */
+.app-container {
+    flex-grow: 1;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.main-header {
+    background-color: var(--bg-primary);
+    padding: 1rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+    flex-shrink: 0;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.menu-button {
+    display: none;
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.menu-button:hover {
+    background-color: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+
+.logo {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.main-nav {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.nav-button {
+    background-color: var(--bg-tertiary);
+    color: var(--text-primary);
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: background-color 0.2s, transform 0.2s;
+}
+
+.nav-button:hover {
+    background-color: #3f3f3f;
+    transform: translateY(-1px);
+}
+
+/* --- 4. MENU DROPDOWN PROFIL --- */
+.profile-menu {
+    position: relative;
+}
+
+.avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid var(--border-color);
+    transition: all 0.2s;
+    background-image: url("R.AI.jpg");
+    background-size: cover;
+    background-position: center;
+}
+
+.avatar:hover,
+.dropdown-menu.active ~ .avatar {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 10px rgba(99, 102, 241, 0.5);
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 55px;
+    right: 0;
+    background-color: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+    width: 240px;
+    z-index: 1000;
+    overflow: hidden;
+    animation: dropdown-fade-in 0.2s ease-out;
+}
+
+@keyframes dropdown-fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.dropdown-menu.active {
+    display: block;
+}
+
+.dropdown-header {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-secondary);
+}
+
+.dropdown-header strong {
+    color: var(--text-primary);
+}
+
+.dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    color: var(--text-primary);
+    text-decoration: none;
+    transition: background-color 0.2s;
+}
+
+.dropdown-item:hover {
+    background-color: var(--accent-color);
+    color: white;
+}
+
+/* --- 5. AREA CHAT --- */
 .chat-area {
     flex-grow: 1;
     padding: 1.5rem;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 1.25rem;
 }
+
 .chat-message {
     padding: 0.75rem 1.25rem;
+    border-radius: 18px;
     max-width: 80%;
     line-height: 1.6;
     word-wrap: break-word;
-}
-.user-message {
-    background: linear-gradient(135deg, var(--accent-user), #6a0dad);
-    color: white;
-    align-self: flex-end;
-}
-.ai-message {
-    align-self: flex-start;
-    color: var(--text-primary);
-}
-.ai-message pre { background-color: rgba(0,0,0,0.2); border: 1px solid var(--glass-border); padding: 1rem; border-radius: 8px; overflow-x: auto; }
-.ai-message :not(pre) > code {
-    background-color: rgba(0,0,0,0.2);
-    padding: 0.2em 0.4em;
-    border-radius: 4px;
-    border: 1px solid var(--glass-border);
-    color: var(--accent-glow);
+    animation: message-fade-in 0.4s ease-out;
 }
 
-/* --- 8. FOOTER & INPUT --- */
+@keyframes message-fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.user-message {
+    background-color: var(--accent-color);
+    color: white;
+    align-self: flex-end;
+    border-bottom-right-radius: 4px;
+}
+
+.ai-message {
+    background-color: var(--bg-tertiary);
+    color: var(--text-primary);
+    align-self: flex-start;
+    border-bottom-left-radius: 4px;
+}
+
+.ai-system-message {
+    align-self: center;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+}
+
+.chat-message pre {
+    background-color: var(--bg-primary);
+    padding: 1rem;
+    border-radius: 8px;
+    overflow-x: auto;
+    border: 1px solid var(--border-color);
+    font-size: 0.9rem;
+}
+
+.chat-message code {
+    font-family: 'SF Mono', 'Consolas', monospace;
+}
+
+.chat-message :not(pre) > code {
+    background-color: var(--bg-primary);
+    padding: 0.2em 0.4em;
+    border-radius: 4px;
+    border: 1px solid var(--border-color);
+    color: var(--accent-color);
+}
+
+/* --- 6. FOOTER & INPUT BAR --- */
 .main-footer {
     padding: 1rem 1.5rem;
     flex-shrink: 0;
+    background-color: var(--bg-primary);
+    border-top: 1px solid var(--border-color);
 }
+
 .prompt-container {
     display: flex;
     align-items: center;
+    background-color: var(--bg-tertiary);
+    border-radius: 12px;
     padding: 0.5rem;
     max-width: 800px;
     margin: 0 auto;
-    transition: all 0.2s;
-}
-.prompt-container:focus-within {
-    border-color: var(--accent-glow);
-    box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
-}
-#prompt-input {
-    flex-grow: 1; border: none; background: transparent;
-    outline: none; padding: 0.75rem; font-size: 1rem;
-    color: var(--text-primary); resize: none; max-height: 200px;
-}
-#prompt-input::placeholder { color: var(--text-secondary); }
-.prompt-container button {
-    background-color: var(--accent-glow);
-    color: var(--bg-dark);
-    border: none; border-radius: 8px; cursor: pointer;
-    width: 40px; height: 40px;
-    display: flex; justify-content: center; align-items: center;
-    transition: all 0.2s; flex-shrink: 0;
-}
-.prompt-container button:hover {
-    background-color: white;
-    box-shadow: 0 0 15px white;
+    border: 1px solid var(--border-color);
+    transition: border-color 0.2s, box-shadow 0.2s;
 }
 
-/* --- 9. RESPONSIF --- */
+.prompt-container:focus-within {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 10px rgba(99, 102, 241, 0.3);
+}
+
+#prompt-input {
+    flex-grow: 1;
+    border: none;
+    background: transparent;
+    outline: none;
+    padding: 0.75rem;
+    font-size: 1rem;
+    color: var(--text-primary);
+    resize: none;
+    max-height: 200px;
+}
+
+#prompt-input::placeholder {
+    color: var(--text-secondary);
+}
+
+.prompt-container button {
+    background-color: var(--accent-color);
+    color: #FFFFFF;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.2s;
+    flex-shrink: 0;
+}
+
+.prompt-container button:hover {
+    background-color: var(--accent-hover);
+}
+
+/* --- 7. DESAIN RESPONSIVE (MOBILE) --- */
 @media (max-width: 768px) {
-    body { display: block; } /* Ubah display di mobile */
-    .history-sidebar {
-        position: fixed; left: 0; top: 0; bottom: 0;
-        margin-left: -100%; /* Sembunyikan dengan margin */
+    body {
+        display: block;
     }
-    body.sidebar-open .history-sidebar { margin-left: 0; }
-    .app-container, .history-sidebar { height: 100%; }
-    .menu-button { display: block; }
+    .history-sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        margin-left: -100%;
+    }
+    body.sidebar-open .history-sidebar {
+        margin-left: 0;
+    }
+    .menu-button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .main-header,
+    .main-footer {
+        padding: 0.75rem 1rem;
+    }
+    .logo {
+        display: none;
+    }
 }
