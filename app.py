@@ -1,5 +1,3 @@
-# app.py (VERSI FINAL DENGAN PERBAIKAN TIMEOUT)
-
 import os
 import uuid
 import psycopg2
@@ -83,34 +81,71 @@ except Exception as e:
     logging.error(f"Error Konfigurasi Gemini: {e}")
 
 briefing_user = """
-    PERATURAN UTAMA DAN IDENTITAS DIRI ANDA:
-    1. Nama kamu adalah Richatz.AI, dibuat oleh seorang developer Indonesia bernama 'R.AI'. Versi kamu adalah 1.0 SPRO.
-    2. Jika ditanya identitasmu, jawab sesuai poin 1. Jangan pernah menjawab "Saya adalah model bahasa besar".
-    3. Kamu TIDAK punya akses internet real-time. Jika ditanya berita atau cuaca terkini, jawab jujur bahwa kamu tidak tahu. JANGAN MENEBAK.
-    4. Sangat Penting: Jika kamu memberikan contoh kode, selalu gunakan Markdown Code Blocks.
+PERATURAN UTAMA DAN IDENTITAS DIRI ANDA:
+1. Nama kamu adalah Richatz.AI, dibuat oleh seorang developer Indonesia bernama 'R.AI'. Versi kamu adalah 1.0 SPRO.
+2. Jika ditanya identitasmu, jawab sesuai poin 1. Jangan pernah menjawab "Saya adalah model bahasa besar".
+3. Kamu TIDAK punya akses internet real-time.
+4. Sangat Penting: Jika kamu memberikan contoh kode, selalu gunakan Markdown Code Blocks.
 """
 briefing_model = "Siap, saya mengerti. Nama saya Richatz.AI v1.0 SPRO."
 
-# === ROUTES APLIKASI ===
+
+# === ROUTES APLIKASI UTAMA ===
 
 @app.route('/')
 @login_required
 def home():
     return render_template('index.html')
 
-# --- ROUTES AUTENTIKASI ---
-# (Register, Login, Logout, Lupa Password) - Tidak ada perubahan di sini
-@app.route('/register', methods=['GET', 'POST'])
-def register():
-    if current_user.is_authenticated: return redirect(url_for('home'))
-    # ... (kode Anda sebelumnya sudah benar) ...
-    return render_template('register.html')
+# === ROUTES AUTENTIKASI (Lengkap) ===
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    if current_user.is_authenticated: return redirect(url_for('home'))
-    # ... (kode Anda sebelumnya sudah benar) ...
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
+    if request.method == 'POST':
+        email = request.form['email']
+        password = request.form['password']
+        remember = 'remember' in request.form
+        conn = None
+        try:
+            conn = get_db_connection()
+            with conn.cursor() as cur:
+                cur.execute("SELECT id, email, password_hash FROM users WHERE email = %s", (email,))
+                user_data = cur.fetchone()
+            if user_data and bcrypt.checkpw(password.encode('utf-8'), user_data[2].encode('utf-8')):
+                user = User(id=user_data[0], email=user_data[1])
+                login_user(user, remember=remember)
+                next_page = request.args.get('next')
+                return redirect(next_page or url_for('home'))
+            else:
+                flash('Email atau password salah.', 'danger')
+        finally:
+            if conn: conn.close()
     return render_template('login.html')
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
+    if request.method == 'POST':
+        email = request.form['email']
+        password = request.form['password']
+        hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+        conn = None
+        try:
+            conn = get_db_connection()
+            with conn.cursor() as cur:
+                cur.execute("INSERT INTO users (email, password_hash) VALUES (%s, %s)", (email, hashed_password.decode('utf-8')))
+            conn.commit()
+            flash('Registrasi berhasil! Silakan login.', 'success')
+            return redirect(url_for('login'))
+        except psycopg2.IntegrityError:
+            flash('Email sudah terdaftar.', 'warning')
+            return redirect(url_for('register'))
+        finally:
+            if conn: conn.close()
+    return render_template('register.html')
 
 @app.route('/logout')
 @login_required
@@ -118,10 +153,113 @@ def logout():
     logout_user()
     return redirect(url_for('login'))
 
-# ... (semua route lupa password Anda sebelumnya sudah benar) ...
+def send_reset_email(user):
+    token = user.get_reset_token()
+    msg = Message('Permintaan Reset Password', sender=os.getenv('MAIL_USERNAME'), recipients=[user.email])
+    msg.body = f'''Untuk mereset password Anda, kunjungi link berikut:
+{url_for('reset_token', token=token, _external=True)}
 
+Jika Anda tidak merasa meminta ini, abaikan saja email ini.
+'''
+    mail.send(msg)
 
-# === ROUTES CHAT (DENGAN PERBAIKAN) ===
+@app.route("/reset_password", methods=['GET', 'POST'])
+def reset_request():
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
+    if request.method == 'POST':
+        email = request.form.get('email')
+        conn = None
+        try:
+            conn = get_db_connection()
+            with conn.cursor() as cur:
+                cur.execute("SELECT id, email FROM users WHERE email = %s", (email,))
+                user_data = cur.fetchone()
+            if user_data:
+                user = User(id=user_data[0], email=user_data[1])
+                send_reset_email(user)
+            flash('Jika email terdaftar, instruksi reset password telah dikirim.', 'info')
+            return redirect(url_for('login'))
+        finally:
+            if conn: conn.close()
+    return render_template('reset_request.html')
+
+@app.route("/reset_password/<token>", methods=['GET', 'POST'])
+def reset_token(token):
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
+    user = User.verify_reset_token(token)
+    if user is None:
+        flash('Token tidak valid atau sudah kedaluwarsa.', 'warning')
+        return redirect(url_for('reset_request'))
+    if request.method == 'POST':
+        password = request.form.get('password')
+        hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+        conn = None
+        try:
+            conn = get_db_connection()
+            with conn.cursor() as cur:
+                cur.execute("UPDATE users SET password_hash = %s WHERE id = %s", (hashed_password.decode('utf-8'), user.id))
+            conn.commit()
+            flash('Password Anda telah diubah! Silakan login.', 'success')
+            return redirect(url_for('login'))
+        finally:
+            if conn: conn.close()
+    return render_template('reset_token.html')
+
+# === ROUTES CHAT API (Lengkap & Aman) ===
+
+@app.route('/history', methods=['GET'])
+@login_required
+def get_history():
+    conn = None
+    try:
+        conn = get_db_connection()
+        with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+            cur.execute("SELECT id, title FROM conversations WHERE user_id = %s ORDER BY timestamp DESC", (current_user.id,))
+            conversations = cur.fetchall()
+        return jsonify(conversations)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    finally:
+        if conn: conn.close()
+
+@app.route('/conversation/<conversation_id>', methods=['GET'])
+@login_required
+def get_conversation(conversation_id):
+    conn = None
+    try:
+        conn = get_db_connection()
+        with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+            cur.execute("SELECT user_id FROM conversations WHERE id = %s", (conversation_id,))
+            owner = cur.fetchone()
+            if not owner or owner['user_id'] != current_user.id:
+                return jsonify({'error': 'Akses ditolak'}), 403
+            cur.execute("SELECT role, content FROM messages WHERE conversation_id = %s AND role IN ('user', 'assistant') ORDER BY timestamp ASC", (conversation_id,))
+            messages = cur.fetchall()
+            return jsonify(messages or [])
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    finally:
+        if conn: conn.close()
+
+@app.route('/delete_conversation/<conversation_id>', methods=['DELETE'])
+@login_required
+def delete_conversation(conversation_id):
+    conn = None
+    try:
+        conn = get_db_connection()
+        with conn.cursor() as cur:
+            cur.execute("DELETE FROM conversations WHERE id = %s AND user_id = %s", (conversation_id, current_user.id))
+            conn.commit()
+            if cur.rowcount > 0:
+                return jsonify({'status': 'success'})
+            else:
+                return jsonify({'status': 'error', 'message': 'Percakapan tidak ditemukan'}), 404
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)}), 500
+    finally:
+        if conn: conn.close()
 
 @app.route('/new_chat', methods=['POST'])
 @login_required
@@ -136,80 +274,64 @@ def new_chat():
         conn.commit()
         return jsonify({'conversation_id': conversation_id})
     except Exception as e:
-        logging.exception(f"Error saat membuat chat baru: {e}")
         return jsonify({'error': str(e)}), 500
     finally:
         if conn: conn.close()
 
-# --- 👇 INI ADALAH FUNGSI YANG DIPERBARUI TOTAL 👇 ---
 @app.route('/ask', methods=['POST'])
 @login_required
 def ask_ai():
     data = request.get_json()
     conversation_id = data.get('conversation_id')
     user_prompt = data.get('prompt')
-
     if not all([conversation_id, user_prompt]):
         return jsonify({'error': 'ID atau prompt tidak ada.'}), 400
     if model is None:
         return jsonify({'answer': "Maaf, model AI belum terkonfigurasi."}), 500
-
+    
     db_history = []
     conn = None
-    
-    # LANGKAH 1: Ambil History & Langsung TUTUP KONEKSI
     try:
         conn = get_db_connection()
         with conn.cursor() as cur:
             cur.execute("SELECT user_id FROM conversations WHERE id = %s", (conversation_id,))
-            owner_id = cur.fetchone()
-            if not owner_id or owner_id[0] != current_user.id:
+            owner = cur.fetchone()
+            if not owner or owner[0] != current_user.id:
                 return jsonify({'error': 'Akses ditolak'}), 403
-            
             cur.execute("SELECT role, content FROM messages WHERE conversation_id = %s ORDER BY timestamp DESC LIMIT 6", (conversation_id,))
             db_history_reversed = cur.fetchall()
             db_history = list(reversed(db_history_reversed))
     except Exception as e:
-        logging.exception(f"Error saat mengambil history: {e}")
         return jsonify({'answer': f"Maaf, gagal mengambil riwayat chat: {e}"}), 500
     finally:
         if conn: conn.close()
 
-    # LANGKAH 2: Panggil AI (Tanpa ada koneksi DB yang terbuka)
     try:
         history_for_ai = [
             {"role": 'user', "parts": [briefing_user]},
             {"role": 'model', "parts": [briefing_model]}
         ]
         history_for_ai.extend([{"role": ('model' if role in ['assistant', 'model'] else 'user'), "parts": [content]} for role, content in db_history])
-
         chat = model.start_chat(history=history_for_ai)
         response = chat.send_message(user_prompt)
         ai_answer = response.text
     except Exception as e:
-        logging.exception(f"Error saat memanggil AI: {e}")
         return jsonify({'answer': f"Maaf, terjadi kesalahan pada AI: {e}"}), 500
 
-    # LANGKAH 3: BUKA KONEKSI BARU & Simpan Pesan
     try:
         conn = get_db_connection()
         with conn.cursor() as cur:
             cur.execute('INSERT INTO messages (conversation_id, role, content) VALUES (%s, %s, %s)', (conversation_id, 'user', user_prompt))
             cur.execute('INSERT INTO messages (conversation_id, role, content) VALUES (%s, %s, %s)', (conversation_id, 'assistant', ai_answer))
-            
-            # Update judul hanya jika ini adalah pesan pertama (history kosong)
             if not db_history:
                 cur.execute("UPDATE conversations SET title = %s WHERE id = %s", (user_prompt[:50], conversation_id))
         conn.commit()
     except Exception as e:
-        logging.exception(f"Error saat menyimpan pesan: {e}")
         return jsonify({'answer': ai_answer, 'warning': 'Gagal menyimpan percakapan.'})
     finally:
         if conn: conn.close()
 
     return jsonify({'answer': ai_answer})
-
-# ... (Route /history, /conversation/<id>, /delete_conversation/<id> Anda sebelumnya sudah benar) ...
 
 if __name__ == '__main__':
     app.run(debug=True)
