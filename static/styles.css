@@ -1,4 +1,4 @@
-/* static/styles.css (VERSI FINAL DENGAN SEMUA PERBAIKAN) */
+/* static/styles.css (VERSI FINAL DENGAN PENYEMPURNAAN) */
 
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap');
 
@@ -44,12 +44,12 @@ body {
     z-index: 1001;
     position: fixed;
     top: 0;
-    left: -320px; /* Sembunyi di awal */
+    left: -320px;
     transition: left 0.35s ease-in-out;
 }
 
 body.sidebar-open .history-sidebar {
-    left: 0; /* Munculkan */
+    left: 0;
 }
 
 .history-header {
@@ -84,6 +84,14 @@ body.sidebar-open .history-sidebar {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    /* TAMBAHAN: Animasi */
+    transition: all 0.2s ease-in-out;
+}
+
+.history-list li:hover {
+    transform: translateX(5px);
+    background-color: var(--accent-color);
+    color: white;
 }
 
 .history-title {
@@ -94,6 +102,14 @@ body.sidebar-open .history-sidebar {
     text-overflow: ellipsis;
     flex-grow: 1;
     margin-right: 10px;
+}
+
+.delete-chat-btn {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: color 0.2s;
 }
 
 .delete-chat-btn:hover {
@@ -117,6 +133,7 @@ body.sidebar-open .history-sidebar {
     opacity: 1;
     visibility: visible;
 }
+
 
 /* --- Container Aplikasi Utama --- */
 .app-container {
@@ -159,11 +176,12 @@ body.sidebar-open .history-sidebar {
     cursor: pointer;
     font-size: 0.9rem;
     font-weight: 500;
-    transition: background-color 0.2s;
+    transition: background-color 0.2s, transform 0.2s;
 }
 
 .nav-button:hover {
     background-color: #4a4a4a;
+    transform: translateY(-2px); /* Animasi angkat */
 }
 
 .avatar {
@@ -176,6 +194,7 @@ body.sidebar-open .history-sidebar {
     flex-shrink: 0;
     border: 2px solid var(--border-color);
     cursor: pointer;
+    transition: all 0.2s;
 }
 
 .profile-menu {
@@ -183,7 +202,7 @@ body.sidebar-open .history-sidebar {
 }
 
 .dropdown-menu {
-    display: none; /* Tersembunyi di awal */
+    display: none;
     position: absolute;
     top: 55px;
     right: 0;
@@ -193,17 +212,22 @@ body.sidebar-open .history-sidebar {
     box-shadow: 0 4px 12px rgba(0,0,0,0.3);
     width: 240px;
     z-index: 1001;
+    /* TAMBAHAN: Animasi */
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
 }
 
 .dropdown-menu.active {
-    display: block; /* Muncul saat diklik */
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
 }
 
 .dropdown-header {
     padding: 1rem;
     border-bottom: 1px solid var(--border-color);
     color: var(--text-secondary);
-    /* PERBAIKAN: Memaksa teks turun baris */
     word-wrap: break-word;
     word-break: break-all;
 }
@@ -232,12 +256,38 @@ body.sidebar-open .history-sidebar {
     gap: 16px;
 }
 
+/* PERBAIKAN: Menengahkan konten saat kosong */
+.chat-area:empty {
+    justify-content: center;
+    align-items: center;
+}
+.chat-area:empty::before {
+    content: "Halo! Selamat datang di Richatz.AI. Silakan ajukan pertanyaan Anda.";
+    color: var(--text-secondary);
+    font-size: 1.2rem;
+    text-align: center;
+}
+
 .chat-message {
     padding: 12px 18px;
     border-radius: 18px;
     max-width: 80%;
     line-height: 1.6;
-    word-wrap: break-word; 
+    word-wrap: break-word;
+    /* TAMBAHAN: Animasi */
+    opacity: 0;
+    animation: message-fade-in 0.5s forwards;
+}
+
+@keyframes message-fade-in {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
 }
 
 .user-message {
@@ -271,6 +321,12 @@ body.sidebar-open .history-sidebar {
     max-width: 800px;
     margin: 0 auto;
     border: 1px solid var(--border-color);
+    transition: all 0.2s ease;
+}
+
+.prompt-container:focus-within {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 10px rgba(68, 90, 255, 0.3);
 }
 
 #prompt-input {
@@ -296,29 +352,35 @@ body.sidebar-open .history-sidebar {
     justify-content: center;
     align-items: center;
     flex-shrink: 0;
+    transition: transform 0.2s;
+}
+
+.prompt-container button:hover {
+    transform: scale(1.1); /* Animasi tombol kirim */
 }
 
 /* --- Desain Responsif --- */
 @media (max-width: 768px) {
     body {
-        /* PERBAIKAN: Body tidak lagi flex di mobile */
         display: block;
     }
-
     .main-header {
-        /* PERBAIKAN: Menambahkan tombol menu mobile di kiri */
         justify-content: flex-start;
         gap: 1rem;
     }
-
-    .logo {
-        /* PERBAIKAN: Logo selalu muncul */
-        display: block;
+    .main-header::before {
+        content: '\f0c9';
+        font-family: 'Font Awesome 6 Free';
+        font-weight: 900;
         font-size: 1.2rem;
+        cursor: pointer;
+        padding: 8px;
+        color: var(--text-secondary);
     }
-
+    .logo {
+        display: none;
+    }
     .main-nav {
-        /* Pindahkan nav ke ujung kanan */
         margin-left: auto;
     }
 }
