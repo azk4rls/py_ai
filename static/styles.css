@@ -9,30 +9,29 @@ body {
     background-color: #121212;
     color: #F1F1F1;
     display: flex;
-    /* overflow-x: hidden; <-- Ini sudah ada, pastikan tidak ada elemen yang memaksakan lebar */
 }
 
 /* --- Styling untuk Menu Profil & Dropdown Logout --- */
 
 .profile-menu {
-    position: relative; /* Penting untuk posisi dropdown */
+    position: relative;
 }
 
-/* Mengubah .avatar menjadi tombol yang bisa diklik */
 .avatar {
     cursor: pointer;
     border: 2px solid transparent;
-    transition: border-color 0.2s;
+    transition: border-color 0.2s, transform 0.2s;
 }
 
 .avatar:hover {
-    border-color: #445aff;
+    border-color: #66bb6a; /* Ganti warna border saat hover */
+    transform: scale(1.1); /* Tambahkan efek zoom saat hover */
 }
 
 .dropdown-menu {
-    display: none; /* Sembunyi secara default */
+    display: none;
     position: absolute;
-    top: 55px; /* Jarak dari ikon avatar */
+    top: 55px;
     right: 0;
     background-color: #202123;
     border: 1px solid #444;
@@ -40,11 +39,15 @@ body {
     box-shadow: 0 4px 12px rgba(0,0,0,0.3);
     width: 240px;
     z-index: 1000;
+    opacity: 0; /* Tambahkan opacity untuk animasi */
+    transform: translateY(-10px); /* Tambahkan transformasi untuk animasi */
+    transition: opacity 0.3s ease, transform 0.3s ease; /* Tambahkan transisi */
 }
 
-/* Class 'active' ini ditambahkan oleh JavaScript untuk memunculkan menu */
 .dropdown-menu.active {
     display: block;
+    opacity: 1; /* Tampilkan dengan opacity */
+    transform: translateY(0); /* Kembalikan ke posisi normal */
 }
 
 .dropdown-header {
@@ -52,7 +55,6 @@ body {
     border-bottom: 1px solid #444;
     color: #8e8e8e;
     font-size: 0.9rem;
-    word-wrap: break-word;
 }
 
 .dropdown-header strong {
@@ -64,12 +66,12 @@ body {
     padding: 0.75rem 1rem;
     color: #ececec;
     text-decoration: none;
+    transition: background-color 0.3s; /* Tambahkan transisi */
 }
 
 .dropdown-item:hover {
-    background-color: #445aff;
+    background-color: #66bb6a; /* Ganti warna saat hover */
     color: white;
-    text-decoration: none;
 }
 
 /* --- History Sidebar & Overlay --- */
@@ -163,10 +165,11 @@ body.sidebar-open .history-sidebar {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    transition: background-color 0.3s; /* Tambahkan transisi */
 }
 
 .history-list li:hover .history-title {
-    color: #445aff;
+    color: #66bb6a; /* Ganti warna saat hover */
 }
 
 .history-list li.empty-history {
@@ -206,13 +209,13 @@ body.sidebar-open .history-sidebar {
 
 /* --- Container Aplikasi Utama --- */
 .app-container {
-    min-width: 0; /* Sangat penting untuk flex item agar bisa menyusut */
+    min-width: 0;
     height: 100vh;
     display: flex;
     flex-direction: column;
     background-color: #1E1E1E;
     flex-grow: 1;
-    transition: margin-left 0.3s ease-in-out, width 0.3s ease-in-out; /* Tambahkan width ke transisi */
+    transition: margin-left 0.3s ease-in-out, width 0.3s ease-in-out;
 }
 
 /* --- Navbar (Atas) --- */
@@ -224,7 +227,6 @@ body.sidebar-open .history-sidebar {
     align-items: center;
     flex-shrink: 0;
     border-bottom: 1px solid #ddd;
-    /* Tambahkan ini untuk memastikan header juga bisa menyusut */
     min-width: 0; 
 }
 
@@ -232,7 +234,6 @@ body.sidebar-open .history-sidebar {
     font-size: 1.5rem;
     font-weight: 700;
     color: #000000;
-    /* Memastikan logo bisa menyusut jika teksnya panjang */
     flex-shrink: 1;
     min-width: 0; 
 }
@@ -244,12 +245,11 @@ body.sidebar-open .history-sidebar {
     flex-grow: 1;
     flex-shrink: 1;
     justify-content: flex-end;
-    /* Memastikan navigasi bisa menyusut */
     min-width: 0; 
 }
 
 .nav-button {
-    background-color: #000000;
+    background-color: #66bb6a; /* Ganti warna tombol */
     color: #FFFFFF;
     border: none;
     padding: 10px 20px;
@@ -258,25 +258,24 @@ body.sidebar-open .history-sidebar {
     font-size: 0.9rem;
     font-weight: 500;
     transition: background-color 0.3s ease, transform 0.2s ease;
-    /* Memastikan tombol bisa menyusut atau menjaga ukurannya */
-    flex-shrink: 0; /* Biasanya tombol tidak menyusut, tapi gap bisa jadi masalah */
+    flex-shrink: 0; 
 }
 
 .nav-button:hover {
-    background-color: #333;
+    background-color: #57a957; /* Ganti warna saat hover */
     transform: translateY(-2px);
 }
 
 .avatar {
     width: 40px;
     height: 40px;
-    background-color: #445aff;
+    background-color: #66bb6a; /* Ganti warna avatar */
     border-radius: 50%;
     background-image: url("R.AI.jpg");
     background-size: 110%;
     background-position: center;
     background-repeat: no-repeat;
-    flex-shrink: 0; /* Pastikan avatar tidak menyusut */
+    flex-shrink: 0; 
 }
 
 /* --- Area Chat (Tengah) --- */
@@ -287,25 +286,24 @@ body.sidebar-open .history-sidebar {
     display: flex;
     flex-direction: column;
     gap: 16px;
-    /* KUNCI untuk mencegah layout melebar karena konten panjang */
     overflow-x: hidden; 
-    word-wrap: break-word; /* Untuk teks umum agar wrap */
-    word-break: break-word; /* Lebih agresif untuk memotong kata panjang */
+    word-wrap: break-word; 
+    word-break: break-word; 
 }
 
 .chat-message {
     padding: 12px 18px;
     border-radius: 12px;
-    max-width: 75%; /* Batasi lebar pesan */
+    max-width: 75%; 
     line-height: 1.6;
     word-wrap: break-word; 
     word-break: break-word; 
-    white-space: pre-wrap; /* Penting untuk menjaga spasi dan line break asli tapi tetap wrap */
-    box-sizing: border-box; /* Memastikan padding tidak membuat elemen melebihi max-width */
+    white-space: pre-wrap; 
+    box-sizing: border-box; 
 }
 
 .user-message {
-    background-color: #445aff;
+    background-color: #66bb6a; /* Ganti warna pesan pengguna */
     color: #000000;
     align-self: flex-end;
     border-radius: 12px 12px 0 12px;
@@ -339,7 +337,7 @@ body.sidebar-open .history-sidebar {
     width: 8px;
     height: 8px;
     margin: 0 3px;
-    background-color: #888;
+    background-color: #66bb6a; /* Ganti warna titik */
     border-radius: 50%;
     animation: typing-animation 1.4s infinite;
 }
@@ -367,7 +365,6 @@ body.sidebar-open .history-sidebar {
     padding: 16px 24px;
     flex-shrink: 0;
     border-top: 1px solid #ddd;
-    /* Pastikan footer juga bisa menyusut */
     min-width: 0; 
 }
 
@@ -379,7 +376,6 @@ body.sidebar-open .history-sidebar {
     padding: 8px;
     max-width: 1200px;
     margin: 0 auto;
-    /* Pastikan container input bisa menyusut */
     min-width: 0; 
 }
 
@@ -391,12 +387,11 @@ body.sidebar-open .history-sidebar {
     padding: 10px;
     font-size: 1rem;
     color: #1E1E1E;
-    /* KUNCI: Pastikan input teks bisa menyusut ke 0 jika perlu */
     min-width: 0; 
 }
 
 .prompt-container button {
-    background-color: #000000;
+    background-color: #66bb6a; /* Ganti warna tombol kirim */
     color: #FFFFFF;
     border: none;
     border-radius: 8px;
@@ -408,39 +403,36 @@ body.sidebar-open .history-sidebar {
     justify-content: center;
     align-items: center;
     transition: background-color 0.3s ease, transform 0.2s ease;
-    flex-shrink: 0; /* Pastikan tombol tidak menyusut ukurannya */
+    flex-shrink: 0; 
 }
 
 .prompt-container button:hover {
-    background-color: #333;
+    background-color: #57a957; /* Ganti warna saat hover */
     transform: scale(1.05);
 }
 
-/* --- Styling untuk Blok Kode (PENTING untuk mengatasi masalah layout melebar) --- */
-/* Ini akan mempengaruhi elemen <pre> yang dihasilkan oleh Marked.js dari blok kode Markdown */
+/* --- Styling untuk Blok Kode --- */
 .chat-message pre {
-    background-color: #2d2d2d; /* Warna latar belakang gelap */
-    color: #f8f8f2; /* Warna teks terang */
+    background-color: #2d2d2d; 
+    color: #f8f8f2; 
     padding: 10px;
     border-radius: 5px;
-    margin: 10px 0; /* Margin atas/bawah */
-    overflow-y: hidden; /* KUNCI: Membuat scroll horizontal jika konten terlalu panjang */
-    white-space: pre-wrap; /* Memastikan baris kode yang panjang akan wrap */
-    word-wrap: break-word; /* Memastikan kata panjang dalam kode juga bisa dipotong */
-    max-width: 100%; /* Penting: Pastikan blok kode tidak melebihi lebar kontainernya */
-    box-sizing: border-box; /* Memastikan padding tidak membuat elemen melebihi max-width */
+    margin: 10px 0; 
+    overflow-y: hidden; 
+    white-space: pre-wrap; 
+    word-wrap: break-word; 
+    max-width: 100%; 
+    box-sizing: border-box; 
 }
 
-/* Styling untuk elemen <code> di dalam <pre> */
 .chat-message pre code {
-    font-family: 'Consolas', 'Monaco', monospace; /* Font monospace */
+    font-family: 'Consolas', 'Monaco', monospace; 
     font-size: 0.9em;
     line-height: 1.4;
-    display: block; /* Agar mengambil lebar penuh parent */
+    display: block; 
     white-space: inherit; 
 }
 
-/* Styling untuk inline code (jika ada, biasanya `teks`) */
 .chat-message code {
     background-color: #444;
     padding: 2px 4px;
@@ -449,7 +441,6 @@ body.sidebar-open .history-sidebar {
     font-size: 0.9em;
 }
 
-
 /* --- Desain Responsif --- */
 @media (max-width: 768px) {
     .history-sidebar {
@@ -457,67 +448,65 @@ body.sidebar-open .history-sidebar {
         margin-left: -280px;
     }
     .logo {
-        font-size: 1.1rem; /* Sedikit lebih kecil */
+        font-size: 1.1rem; 
     }
     .main-header,
     .main-footer {
-        padding: 12px 10px; /* Kurangi padding untuk memberi lebih banyak ruang */
+        padding: 12px 10px; 
     }
     .nav-button {
-        padding: 8px 10px; /* Padding tombol sedikit lebih kecil */
+        padding: 8px 10px; 
         font-size: 0.8rem;
     }
     .avatar {
-        width: 36px; /* Sedikit lebih kecil */
+        width: 36px; 
         height: 36px;
     }
     .chat-message {
-        max-width: 85%; /* Sedikit lebih lebar agar pesan tidak terlalu sempit */
+        max-width: 85%; 
     }
     .prompt-container {
-        /* Tidak perlu width: 100% karena box-sizing sudah ada dan padding di main-footer akan mengaturnya */
-        padding: 6px; /* Kurangi padding di container input */
+        padding: 6px; 
     }
     #prompt-input {
-        padding: 8px; /* Kurangi padding input teks */
-        font-size: 0.95rem; /* Sedikit lebih kecil */
+        padding: 8px; 
+        font-size: 0.95rem; 
     }
     .prompt-container button {
-        width: 40px; /* Tombol kirim lebih kecil */
+        width: 40px; 
         height: 40px;
     }
 }
 
-/* --- Perbaikan Tambahan untuk Layar yang SANGAT KECIL (misal di bawah 400px) --- */
 @media (max-width: 400px) {
     .main-header {
-        padding: 10px 8px; /* Padding header lebih kecil lagi */
+        padding: 10px 8px; 
     }
     .logo {
-        font-size: 1rem; /* Logo bisa lebih kecil */
+        font-size: 1rem; 
     }
     .main-nav {
-        gap: 5px; /* Jarak antar tombol/avatar lebih kecil */
+        gap: 5px; 
     }
     .nav-button {
-        padding: 6px 8px; /* Padding tombol paling minimal */
-        font-size: 0.75rem; /* Font tombol lebih kecil lagi */
+        padding: 6px 8px; 
+        font-size: 0.75rem; 
     }
     .avatar {
-        width: 30px; /* Avatar terkecil */
+        width: 30px; 
         height: 30px;
     }
     .main-footer {
-        padding: 10px 8px; /* Padding footer lebih kecil lagi */
+        padding: 10px 8px; 
     }
     .prompt-container {
-        padding: 5px; /* Padding container input paling minimal */
+        padding: 5px; 
     }
     #prompt-input {
-        font-size: 0.9rem; /* Input font terkecil */
+        font-size: 0.9rem; 
     }
     .prompt-container button {
-        width: 36px; /* Tombol kirim terkecil */
+        width: 36px; 
         height: 36px;
     }
 }
