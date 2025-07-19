@@ -1,4 +1,4 @@
-/* static/styles.css (VERSI PERBAIKAN) */
+/* static/styles.css (VERSI FINAL DENGAN SEMUA PERBAIKAN) */
 
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap');
 
@@ -42,7 +42,7 @@ body {
     flex-direction: column;
     flex-shrink: 0;
     z-index: 1001;
-    position: fixed; /* Diubah agar konsisten */
+    position: fixed;
     top: 0;
     left: -320px; /* Sembunyi di awal */
     transition: left 0.35s ease-in-out;
@@ -118,10 +118,9 @@ body.sidebar-open .history-sidebar {
     visibility: visible;
 }
 
-
 /* --- Container Aplikasi Utama --- */
 .app-container {
-    width: 100%; /* Ambil lebar penuh */
+    width: 100%;
     height: 100vh;
     display: flex;
     flex-direction: column;
@@ -130,7 +129,7 @@ body.sidebar-open .history-sidebar {
 
 /* --- Navbar (Atas) --- */
 .main-header {
-    background-color: var(--bg-primary); /* Disesuaikan agar gelap */
+    background-color: var(--bg-primary);
     padding: 1rem 1.5rem;
     display: flex;
     justify-content: space-between;
@@ -142,7 +141,7 @@ body.sidebar-open .history-sidebar {
 .logo {
     font-size: 1.5rem;
     font-weight: 700;
-    color: var(--text-primary); /* Disesuaikan agar terang */
+    color: var(--text-primary);
 }
 
 .main-nav {
@@ -152,11 +151,11 @@ body.sidebar-open .history-sidebar {
 }
 
 .nav-button {
-    background-color: var(--bg-tertiary); /* Warna lebih konsisten */
+    background-color: var(--bg-tertiary);
     color: var(--text-primary);
     border: none;
     padding: 10px 20px;
-    border-radius: 8px; /* Sudut sedikit lebih tegas */
+    border-radius: 8px;
     cursor: pointer;
     font-size: 0.9rem;
     font-weight: 500;
@@ -171,7 +170,7 @@ body.sidebar-open .history-sidebar {
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    background-image: url("{{ url_for('static', filename='R.AI.jpg') }}"); /* Path yang benar */
+    background-image: url("{{ url_for('static', filename='R.AI.jpg') }}");
     background-size: cover;
     background-position: center;
     flex-shrink: 0;
@@ -184,7 +183,7 @@ body.sidebar-open .history-sidebar {
 }
 
 .dropdown-menu {
-    display: none;
+    display: none; /* Tersembunyi di awal */
     position: absolute;
     top: 55px;
     right: 0;
@@ -197,17 +196,20 @@ body.sidebar-open .history-sidebar {
 }
 
 .dropdown-menu.active {
-    display: block;
+    display: block; /* Muncul saat diklik */
 }
 
 .dropdown-header {
     padding: 1rem;
     border-bottom: 1px solid var(--border-color);
     color: var(--text-secondary);
+    /* PERBAIKAN: Memaksa teks turun baris */
+    word-wrap: break-word;
+    word-break: break-all;
 }
 
 .dropdown-item {
-    display: flex; /* Agar ikon dan teks sejajar */
+    display: flex;
     align-items: center;
     gap: 0.75rem;
     padding: 0.75rem 1rem;
@@ -240,7 +242,7 @@ body.sidebar-open .history-sidebar {
 
 .user-message {
     background-color: var(--accent-color);
-    color: white; /* Diubah agar kontras */
+    color: white;
     align-self: flex-end;
     border-bottom-right-radius: 4px;
 }
@@ -252,24 +254,9 @@ body.sidebar-open .history-sidebar {
     border-bottom-left-radius: 4px;
 }
 
-.ai-system-message {
-    align-self: center;
-    color: var(--text-secondary);
-}
-
-/* Styling untuk Blok Kode */
-.chat-message pre {
-    background-color: var(--bg-primary);
-    color: #f8f8f2;
-    padding: 1rem;
-    border-radius: 8px;
-    overflow-x: auto; /* Diubah agar scroll horizontal */
-    border: 1px solid var(--border-color);
-}
-
 /* --- Footer (Input) --- */
 .main-footer {
-    background-color: var(--bg-primary); /* Disesuaikan agar gelap */
+    background-color: var(--bg-primary);
     padding: 1rem 1.5rem;
     flex-shrink: 0;
     border-top: 1px solid var(--border-color);
@@ -314,30 +301,24 @@ body.sidebar-open .history-sidebar {
 /* --- Desain Responsif --- */
 @media (max-width: 768px) {
     body {
-        display: block; /* Agar sidebar bisa overlay */
+        /* PERBAIKAN: Body tidak lagi flex di mobile */
+        display: block;
     }
-    .app-container {
-        transition: transform 0.35s ease-in-out;
-    }
-    body.sidebar-open .app-container {
-        /* Sedikit efek geser saat sidebar terbuka */
-        transform: translateX(80px) scale(0.95);
-        border-radius: 20px;
-        overflow: hidden;
-    }
-    .logo {
-        display: none;
-    }
+
     .main-header {
-        padding: 12px 16px;
+        /* PERBAIKAN: Menambahkan tombol menu mobile di kiri */
+        justify-content: flex-start;
+        gap: 1rem;
     }
-    .main-header::before { /* Menambahkan Tombol Menu Mobile */
-        content: '\f0c9'; /* Kode ikon bars dari Font Awesome */
-        font-family: 'Font Awesome 6 Free';
-        font-weight: 900;
+
+    .logo {
+        /* PERBAIKAN: Logo selalu muncul */
+        display: block;
         font-size: 1.2rem;
-        cursor: pointer;
-        padding: 8px;
-        color: var(--text-secondary);
+    }
+
+    .main-nav {
+        /* Pindahkan nav ke ujung kanan */
+        margin-left: auto;
     }
 }
