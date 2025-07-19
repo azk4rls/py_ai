@@ -1,8 +1,7 @@
-/* static/styles.css (VERSI FINAL LENGKAP) */
+/* static/styles.css (VERSI FINAL DENGAN SEMUA PERBAIKAN) */
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
 
-/* --- 1. FONDASI & VARIABEL WARNA --- */
 :root {
     --bg-primary: #181818;
     --bg-secondary: #212121;
@@ -12,7 +11,6 @@
     --border-color: #3a3a3a;
     --accent-color: #6366f1;
     --accent-hover: #4f46e5;
-    --danger-color: #ef4444;
 }
 
 * {
@@ -21,16 +19,20 @@
     box-sizing: border-box;
 }
 
+html, body {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
 body {
     font-family: 'Inter', sans-serif;
     background-color: var(--bg-primary);
     color: var(--text-primary);
-    display: flex;
     height: 100vh;
-    overflow: hidden;
+    display: flex;
 }
 
-/* --- 2. SIDEBAR HISTORY --- */
+/* --- SIDEBAR HISTORY --- */
 .history-sidebar {
     width: 280px;
     height: 100%;
@@ -38,9 +40,15 @@ body {
     border-right: 1px solid var(--border-color);
     display: flex;
     flex-direction: column;
-    transition: margin-left 0.3s ease-in-out;
     flex-shrink: 0;
     z-index: 1000;
+    position: fixed;
+    left: -280px; /* Sembunyi di awal */
+    transition: left 0.3s ease-in-out;
+}
+
+body.sidebar-open .history-sidebar {
+    left: 0; /* Munculkan */
 }
 
 .history-header {
@@ -49,17 +57,12 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    flex-shrink: 0;
-}
-
-.history-header h3 {
-    font-size: 1.1rem;
 }
 
 .close-btn {
-    color: var(--text-secondary);
     background: none;
     border: none;
+    color: var(--text-secondary);
     font-size: 1.5rem;
     cursor: pointer;
 }
@@ -91,7 +94,6 @@ body {
 .history-list li.active {
     background-color: var(--accent-color);
     color: white;
-    font-weight: 500;
 }
 
 .history-title {
@@ -100,18 +102,6 @@ body {
     text-overflow: ellipsis;
     flex-grow: 1;
     margin-right: 1rem;
-}
-
-.delete-chat-btn {
-    background: none;
-    border: none;
-    color: var(--text-secondary);
-    cursor: pointer;
-}
-
-.delete-chat-btn:hover {
-    background-color: var(--bg-tertiary);
-    color: var(--danger-color);
 }
 
 .sidebar-overlay {
@@ -132,15 +122,16 @@ body {
     visibility: visible;
 }
 
-/* --- 3. HEADER & NAVIGASI --- */
+/* --- CONTAINER APLIKASI UTAMA --- */
 .app-container {
     flex-grow: 1;
     height: 100vh;
     display: flex;
     flex-direction: column;
-    min-width: 0;
+    width: 100%;
 }
 
+/* --- HEADER --- */
 .main-header {
     background-color: var(--bg-primary);
     padding: 1rem 1.5rem;
@@ -148,7 +139,6 @@ body {
     justify-content: space-between;
     align-items: center;
     border-bottom: 1px solid var(--border-color);
-    flex-shrink: 0;
 }
 
 .header-left {
@@ -158,7 +148,9 @@ body {
 }
 
 .menu-button {
-    display: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     background: transparent;
     border: 1px solid var(--border-color);
     color: var(--text-secondary);
@@ -167,12 +159,6 @@ body {
     border-radius: 8px;
     font-size: 1.1rem;
     cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.menu-button:hover {
-    background-color: var(--bg-tertiary);
-    color: var(--text-primary);
 }
 
 .logo {
@@ -187,257 +173,29 @@ body {
     gap: 0.75rem;
 }
 
-.nav-button {
-    background-color: var(--bg-tertiary);
-    color: var(--text-primary);
-    border: none;
-    padding: 0.6rem 1.2rem;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 0.9rem;
-    font-weight: 500;
-    transition: background-color 0.2s, transform 0.2s;
-}
-
-.nav-button:hover {
-    background-color: #3f3f3f;
-    transform: translateY(-1px);
-}
-
-/* --- 4. MENU DROPDOWN PROFIL --- */
+/* --- DROPDOWN LOGOUT --- */
 .profile-menu {
     position: relative;
-}
-
-.avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    cursor: pointer;
-    border: 2px solid var(--border-color);
-    transition: all 0.2s;
-    background-image: url("R.AI.jpg");
-    background-size: cover;
-    background-position: center;
-}
-
-.avatar:hover,
-.dropdown-menu.active ~ .avatar {
-    border-color: var(--accent-color);
-    box-shadow: 0 0 10px rgba(99, 102, 241, 0.5);
-}
-
-.dropdown-menu {
-    display: none;
-    position: absolute;
-    top: 55px;
-    right: 0;
-    background-color: var(--bg-tertiary);
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
-    width: 240px;
-    z-index: 1000;
-    overflow: hidden;
-    animation: dropdown-fade-in 0.2s ease-out;
-}
-
-@keyframes dropdown-fade-in {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.dropdown-menu.active {
-    display: block;
 }
 
 .dropdown-header {
     padding: 1rem;
     border-bottom: 1px solid var(--border-color);
     color: var(--text-secondary);
+    word-wrap: break-word;
+    word-break: break-all;
 }
 
 .dropdown-header strong {
     color: var(--text-primary);
 }
 
-.dropdown-item {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0.75rem 1rem;
-    color: var(--text-primary);
-    text-decoration: none;
-    transition: background-color 0.2s;
-}
-
-.dropdown-item:hover {
-    background-color: var(--accent-color);
-    color: white;
-}
-
-/* --- 5. AREA CHAT --- */
-.chat-area {
-    flex-grow: 1;
-    padding: 1.5rem;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 1.25rem;
-}
-
-.chat-message {
-    padding: 0.75rem 1.25rem;
-    border-radius: 18px;
-    max-width: 80%;
-    line-height: 1.6;
-    word-wrap: break-word;
-    animation: message-fade-in 0.4s ease-out;
-}
-
-@keyframes message-fade-in {
-    from {
-        opacity: 0;
-        transform: translateY(15px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.user-message {
-    background-color: var(--accent-color);
-    color: white;
-    align-self: flex-end;
-    border-bottom-right-radius: 4px;
-}
-
-.ai-message {
-    background-color: var(--bg-tertiary);
-    color: var(--text-primary);
-    align-self: flex-start;
-    border-bottom-left-radius: 4px;
-}
-
-.ai-system-message {
-    align-self: center;
-    color: var(--text-secondary);
-    font-size: 0.85rem;
-}
-
-.chat-message pre {
-    background-color: var(--bg-primary);
-    padding: 1rem;
-    border-radius: 8px;
-    overflow-x: auto;
-    border: 1px solid var(--border-color);
-    font-size: 0.9rem;
-}
-
-.chat-message code {
-    font-family: 'SF Mono', 'Consolas', monospace;
-}
-
-.chat-message :not(pre) > code {
-    background-color: var(--bg-primary);
-    padding: 0.2em 0.4em;
-    border-radius: 4px;
-    border: 1px solid var(--border-color);
-    color: var(--accent-color);
-}
-
-/* --- 6. FOOTER & INPUT BAR --- */
-.main-footer {
-    padding: 1rem 1.5rem;
-    flex-shrink: 0;
-    background-color: var(--bg-primary);
-    border-top: 1px solid var(--border-color);
-}
-
-.prompt-container {
-    display: flex;
-    align-items: center;
-    background-color: var(--bg-tertiary);
-    border-radius: 12px;
-    padding: 0.5rem;
-    max-width: 800px;
-    margin: 0 auto;
-    border: 1px solid var(--border-color);
-    transition: border-color 0.2s, box-shadow 0.2s;
-}
-
-.prompt-container:focus-within {
-    border-color: var(--accent-color);
-    box-shadow: 0 0 10px rgba(99, 102, 241, 0.3);
-}
-
-#prompt-input {
-    flex-grow: 1;
-    border: none;
-    background: transparent;
-    outline: none;
-    padding: 0.75rem;
-    font-size: 1rem;
-    color: var(--text-primary);
-    resize: none;
-    max-height: 200px;
-}
-
-#prompt-input::placeholder {
-    color: var(--text-secondary);
-}
-
-.prompt-container button {
-    background-color: var(--accent-color);
-    color: #FFFFFF;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    transition: background-color 0.2s;
-    flex-shrink: 0;
-}
-
-.prompt-container button:hover {
-    background-color: var(--accent-hover);
-}
-
-/* --- 7. DESAIN RESPONSIVE (MOBILE) --- */
+/* --- RESPONSIVE --- */
 @media (max-width: 768px) {
     body {
         display: block;
     }
-    .history-sidebar {
-        position: fixed;
-        left: 0;
-        top: 0;
-        bottom: 0;
-        margin-left: -100%;
-    }
-    body.sidebar-open .history-sidebar {
-        margin-left: 0;
-    }
-    .menu-button {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-    .main-header,
-    .main-footer {
+    .main-header {
         padding: 0.75rem 1rem;
-    }
-    .logo {
-        display: none;
     }
 }
