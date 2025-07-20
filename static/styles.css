@@ -223,7 +223,7 @@ body.sidebar-open .history-sidebar {
     justify-content: space-between;
     align-items: center;
     flex-shrink: 0;
-    border-bottom: 1px solid #ddd;
+    border-bottom: 1px solid #1E1E1E;
     /* Tambahkan ini untuk memastikan header juga bisa menyusut */
     min-width: 0; 
 }
@@ -231,7 +231,7 @@ body.sidebar-open .history-sidebar {
 .logo {
     font-size: 1.5rem;
     font-weight: 700;
-    color: #000000;
+    color: #ffffff;
     /* Memastikan logo bisa menyusut jika teksnya panjang */
     flex-shrink: 1;
     min-width: 0; 
