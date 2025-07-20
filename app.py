@@ -29,7 +29,7 @@ app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
 app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
 mail = Mail(app)
 
-# --- TEMPLATE EMAIL HTML ---
+# --- TEMPLATE EMAIL HTML (Dengan Perbaikan) ---
 HTML_EMAIL_TEMPLATE = """
 <!DOCTYPE html>
 <html lang="id">
@@ -37,14 +37,14 @@ HTML_EMAIL_TEMPLATE = """
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f4f4; }
-        .container { max-width: 600px; margin: 40px auto; background-color: #ffffff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .header { text-align: center; border-bottom: 1px solid #eeeeee; padding-bottom: 20px; margin-bottom: 20px; }
-        .header h1 { color: #333; }
-        .content p { color: #555555; line-height: 1.6; }
-        .otp-code { background-color: #eef2ff; color: #4338ca; font-size: 24px; font-weight: bold; padding: 15px 20px; border-radius: 8px; text-align: center; letter-spacing: 5px; margin: 20px 0; }
-        .button { display: inline-block; background-color: #4f46e5; color: #ffffff; padding: 12px 25px; border-radius: 8px; text-decoration: none; font-weight: bold; margin: 20px 0; }
-        .footer { text-align: center; margin-top: 30px; font-size: 12px; color: #999999; }
+        body {{ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f4f4; }}
+        .container {{ max-width: 600px; margin: 40px auto; background-color: #ffffff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }}
+        .header {{ text-align: center; border-bottom: 1px solid #eeeeee; padding-bottom: 20px; margin-bottom: 20px; }}
+        .header h1 {{ color: #333; }}
+        .content p {{ color: #555555; line-height: 1.6; }}
+        .otp-code {{ background-color: #eef2ff; color: #4338ca; font-size: 24px; font-weight: bold; padding: 15px 20px; border-radius: 8px; text-align: center; letter-spacing: 5px; margin: 20px 0; }}
+        .button {{ display: inline-block; background-color: #4f46e5; color: #ffffff; padding: 12px 25px; border-radius: 8px; text-decoration: none; font-weight: bold; margin: 20px 0; }}
+        .footer {{ text-align: center; margin-top: 30px; font-size: 12px; color: #999999; }}
     </style>
 </head>
 <body>
@@ -56,7 +56,7 @@ HTML_EMAIL_TEMPLATE = """
             <p>Hello {name},</p>
             {main_content}
             <p>If you did not request this, please ignore this email.</p>
-            <p>Thanks,<br>The R.ARTCH Team</p>
+            <p>Thanks,<br>The Richatz.AI Team</p>
         </div>
         <div class="footer">
             <p>&copy; 2025 Richatz.AI. All rights reserved.</p>
@@ -400,6 +400,7 @@ def ask_ai():
 
     user_prompt_lower = user_prompt_original.lower()
     ai_answer = ""
+    db_history = []
     
     if "cuaca" in user_prompt_lower:
         try:
@@ -433,7 +434,6 @@ def ask_ai():
             pass 
 
     if not ai_answer:
-        db_history = []
         conn = None
         try:
             conn = get_db_connection()
