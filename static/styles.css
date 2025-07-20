@@ -217,7 +217,7 @@ body.sidebar-open .history-sidebar {
 
 /* --- Navbar (Atas) --- */
 .main-header {
-    background-color: #F1F1F1;
+    background-color: #1E1E1E;
     padding: 16px 24px;
     display: flex;
     justify-content: space-between;
@@ -249,8 +249,8 @@ body.sidebar-open .history-sidebar {
 }
 
 .nav-button {
-    background-color: #000000;
-    color: #FFFFFF;
+    background-color: #e0eff7;
+    color: #000000;
     border: none;
     padding: 10px 20px;
     border-radius: 20px;
@@ -366,7 +366,7 @@ body.sidebar-open .history-sidebar {
     background-color: #1E1E1E;
     padding: 16px 24px;
     flex-shrink: 0;
-    border-top: 1px solid #1E1E1E;
+    border-top: 1px solid #ddd;
     /* Pastikan footer juga bisa menyusut */
     min-width: 0; 
 }
