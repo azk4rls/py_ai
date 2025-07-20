@@ -240,6 +240,11 @@
         align-items: flex-start;
         gap: 15px;
     }
+    .otp-input-group input {
+        font-size: 1.2rem; /* Paksa ukuran font lebih kecil di mobile */
+        width: 40px;       /* Sesuaikan lebar kotak */
+        height: 48px;      /* Sesuaikan tinggi kotak */
+    }
 }
 
 /* Flash Messages (Notifikasi) */

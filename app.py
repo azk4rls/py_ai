@@ -115,7 +115,7 @@ def login():
             
             if user_data and bcrypt.checkpw(password.encode('utf-8'), user_data['password_hash'].encode('utf-8')):
                 if not user_data['is_verified']:
-                    flash('Akun Anda belum diverifikasi. Silakan cek email untuk OTP.', 'warning')
+                    flash('Your account is not verified. Please check your email for the OTP.', 'warning')
                     return redirect(url_for('verify_otp', email=email))
 
                 user = User(id=user_data['id'], email=user_data['email'])
@@ -123,7 +123,7 @@ def login():
                 next_page = request.args.get('next')
                 return redirect(next_page or url_for('home'))
             else:
-                flash('Email atau password salah.', 'danger')
+                flash('Incorrect email or password.', 'danger')
         finally:
             if conn: conn.close()
     return render_template('login.html')
@@ -144,7 +144,7 @@ def register():
                 user = cur.fetchone()
 
                 if user and user['is_verified']:
-                    flash('Email sudah terdaftar. Silakan login.', 'warning')
+                    flash('Email already registered. Please log in.', 'warning')
                     return redirect(url_for('login'))
 
                 otp = "".join([str(random.randint(0, 9)) for _ in range(6)])
@@ -163,15 +163,15 @@ def register():
                     )
             conn.commit()
 
-            msg = Message('Kode Verifikasi Akun Richatz.AI', sender=os.getenv('MAIL_USERNAME'), recipients=[email])
-            msg.body = f'Halo {name},\n\nKode OTP Anda adalah: {otp}\n\nKode ini akan kedaluwarsa dalam 10 menit.'
+            msg = Message('Your Richatz.AI Verification Code', sender=os.getenv('MAIL_USERNAME'), recipients=[email])
+            msg.body = f'Hello {name},\n\nYour OTP code is: {otp}\n\nThis code will expire in 10 minutes.'
             mail.send(msg)
 
-            flash('Pendaftaran berhasil! Cek email Anda untuk kode OTP.', 'info')
+            flash('Registration successful! Please check your email for the OTP code.', 'info')
             return redirect(url_for('verify_otp', email=email))
         except Exception as e:
-            logging.error(f"Error saat registrasi: {e}")
-            flash('Terjadi kesalahan saat pendaftaran.', 'danger')
+            logging.error(f"Error during registration: {e}")
+            flash('An error occurred during registration.', 'danger')
         finally:
             if conn: conn.close()
     return render_template('register.html')
@@ -191,7 +191,7 @@ def verify_otp():
                 user = cur.fetchone()
 
                 if not user:
-                    flash('Email tidak ditemukan.', 'danger')
+                    flash('Email not found.', 'danger')
                     return redirect(url_for('register'))
                 
                 if user['otp'] == otp_from_form and user['otp_expires_at'] > datetime.now(timezone.utc):
@@ -200,10 +200,10 @@ def verify_otp():
                         (email,)
                     )
                     conn.commit()
-                    flash('Verifikasi berhasil! Silakan login.', 'success')
+                    flash('Verification successful! Please log in.', 'success')
                     return redirect(url_for('login'))
                 else:
-                    flash('Kode OTP salah atau sudah kedaluwarsa.', 'danger')
+                    flash('Incorrect or expired OTP code.', 'danger')
         finally:
             if conn: conn.close()
     return render_template('verify_otp.html', email=email)
@@ -216,8 +216,8 @@ def logout():
 
 def send_reset_email(user):
     token = user.get_reset_token()
-    msg = Message('Permintaan Reset Password', sender=os.getenv('MAIL_USERNAME'), recipients=[user.email])
-    msg.body = f'Untuk mereset password Anda, kunjungi link berikut:\n{url_for("reset_token", token=token, _external=True)}'
+    msg = Message('Password Reset Request', sender=os.getenv('MAIL_USERNAME'), recipients=[user.email])
+    msg.body = f'To reset your password, visit the following link:\n{url_for("reset_token", token=token, _external=True)}'
     mail.send(msg)
 
 @app.route("/reset_password", methods=['GET', 'POST'])
@@ -235,7 +235,7 @@ def reset_request():
             if user_data:
                 user = User(id=user_data[0], email=user_data[1])
                 send_reset_email(user)
-            flash('Jika email terdaftar, instruksi reset password telah dikirim.', 'info')
+            flash('If the email is registered, password reset instructions have been sent.', 'info')
             return redirect(url_for('login'))
         finally:
             if conn: conn.close()
@@ -247,7 +247,7 @@ def reset_token(token):
         return redirect(url_for('home'))
     user = User.verify_reset_token(token)
     if user is None:
-        flash('Token tidak valid atau sudah kedaluwarsa.', 'warning')
+        flash('That is an invalid or expired token.', 'warning')
         return redirect(url_for('reset_request'))
     if request.method == 'POST':
         password = request.form.get('password')
@@ -258,7 +258,7 @@ def reset_token(token):
             with conn.cursor() as cur:
                 cur.execute("UPDATE users SET password_hash = %s WHERE id = %s", (hashed_password.decode('utf-8'), user.id))
             conn.commit()
-            flash('Password Anda telah diubah! Silakan login.', 'success')
+            flash('Your password has been updated! You are now able to log in.', 'success')
             return redirect(url_for('login'))
         finally:
             if conn: conn.close()
@@ -266,7 +266,6 @@ def reset_token(token):
 
 
 # === ROUTES CHAT API (Lengkap & Aman) ===
-
 @app.route('/history', methods=['GET'])
 @login_required
 def get_history():
@@ -292,7 +291,7 @@ def get_conversation(conversation_id):
             cur.execute("SELECT user_id FROM conversations WHERE id = %s", (conversation_id,))
             owner = cur.fetchone()
             if not owner or owner['user_id'] != current_user.id:
-                return jsonify({'error': 'Akses ditolak'}), 403
+                return jsonify({'error': 'Access denied'}), 403
             cur.execute("SELECT role, content FROM messages WHERE conversation_id = %s AND role IN ('user', 'assistant') ORDER BY timestamp ASC", (conversation_id,))
             messages = cur.fetchall()
             return jsonify(messages or [])
@@ -313,7 +312,7 @@ def delete_conversation(conversation_id):
             if cur.rowcount > 0:
                 return jsonify({'status': 'success'})
             else:
-                return jsonify({'status': 'error', 'message': 'Percakapan tidak ditemukan'}), 404
+                return jsonify({'status': 'error', 'message': 'Conversation not found'}), 404
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 500
     finally:
@@ -328,7 +327,7 @@ def new_chat():
         conn = get_db_connection()
         with conn.cursor() as cur:
             cur.execute('INSERT INTO conversations (id, title, user_id) VALUES (%s, %s, %s)', 
-                        (conversation_id, "Percakapan Baru", current_user.id))
+                        (conversation_id, "New Conversation", current_user.id))
         conn.commit()
         return jsonify({'conversation_id': conversation_id})
     except Exception as e:
@@ -343,9 +342,9 @@ def ask_ai():
     conversation_id = data.get('conversation_id')
     user_prompt = data.get('prompt')
     if not all([conversation_id, user_prompt]):
-        return jsonify({'error': 'ID atau prompt tidak ada.'}), 400
+        return jsonify({'error': 'Conversation ID or prompt missing.'}), 400
     if model is None:
-        return jsonify({'answer': "Maaf, model AI belum terkonfigurasi."}), 500
+        return jsonify({'answer': "Sorry, the AI model is not configured."}), 500
     
     db_history = []
     conn = None
@@ -355,12 +354,12 @@ def ask_ai():
             cur.execute("SELECT user_id FROM conversations WHERE id = %s", (conversation_id,))
             owner = cur.fetchone()
             if not owner or owner[0] != current_user.id:
-                return jsonify({'error': 'Akses ditolak'}), 403
+                return jsonify({'error': 'Access denied'}), 403
             cur.execute("SELECT role, content FROM messages WHERE conversation_id = %s ORDER BY timestamp DESC LIMIT 6", (conversation_id,))
             db_history_reversed = cur.fetchall()
             db_history = list(reversed(db_history_reversed))
     except Exception as e:
-        return jsonify({'answer': f"Maaf, gagal mengambil riwayat chat: {e}"}), 500
+        return jsonify({'answer': f"Sorry, failed to retrieve chat history: {e}"}), 500
     finally:
         if conn: conn.close()
 
@@ -374,7 +373,7 @@ def ask_ai():
         response = chat.send_message(user_prompt)
         ai_answer = response.text
     except Exception as e:
-        return jsonify({'answer': f"Maaf, terjadi kesalahan pada AI: {e}"}), 500
+        return jsonify({'answer': f"Sorry, an error occurred with the AI: {e}"}), 500
 
     try:
         conn = get_db_connection()
@@ -385,7 +384,7 @@ def ask_ai():
                 cur.execute("UPDATE conversations SET title = %s WHERE id = %s", (user_prompt[:50], conversation_id))
         conn.commit()
     except Exception as e:
-        return jsonify({'answer': ai_answer, 'warning': 'Gagal menyimpan percakapan.'})
+        return jsonify({'answer': ai_answer, 'warning': 'Failed to save conversation.'})
     finally:
         if conn: conn.close()
 
