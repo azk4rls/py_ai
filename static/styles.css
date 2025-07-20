@@ -366,7 +366,7 @@ body.sidebar-open .history-sidebar {
     background-color: #1E1E1E;
     padding: 16px 24px;
     flex-shrink: 0;
-    border-top: 1px solid #ddd;
+    border-top: 1px solid #1E1E1E;
     /* Pastikan footer juga bisa menyusut */
     min-width: 0; 
 }
