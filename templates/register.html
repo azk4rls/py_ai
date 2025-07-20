@@ -7,14 +7,19 @@
     <h2>Buat Akun Baru</h2>
     <form method="POST" action="{{ url_for('register') }}">
         <div class="form-group">
+            <label for="name">Nama</label>
+            <input type="text" id="name" name="name" required placeholder="Masukkan nama Anda">
+        </div>
+        
+        <div class="form-group">
             <label for="email">Email</label>
-            <input type="email" id="email" name="email" required placeholder="Enter your email">
+            <input type="email" id="email" name="email" required placeholder="Masukkan email Anda">
         </div>
         <div class="form-group">
             <label for="password">Password</label>
-            <input type="password" id="password" name="password" required placeholder="Create a password">
+            <input type="password" id="password" name="password" required placeholder="Buat password">
         </div>
-        <button type="submit" class="btn-primary">Register</button>
+        <button type="submit" class="btn-primary">Daftar & Kirim OTP</button>
     </form>
 
     <p class="auth-switch">Already Have an Account? <a href="{{ url_for('login') }}">Login Here</a></p>
