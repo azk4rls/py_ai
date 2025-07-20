@@ -29,6 +29,43 @@ app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
 app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
 mail = Mail(app)
 
+# --- TEMPLATE EMAIL HTML ---
+HTML_EMAIL_TEMPLATE = """
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f4f4; }
+        .container { max-width: 600px; margin: 40px auto; background-color: #ffffff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .header { text-align: center; border-bottom: 1px solid #eeeeee; padding-bottom: 20px; margin-bottom: 20px; }
+        .header h1 { color: #333; }
+        .content p { color: #555555; line-height: 1.6; }
+        .otp-code { background-color: #eef2ff; color: #4338ca; font-size: 24px; font-weight: bold; padding: 15px 20px; border-radius: 8px; text-align: center; letter-spacing: 5px; margin: 20px 0; }
+        .button { display: inline-block; background-color: #4f46e5; color: #ffffff; padding: 12px 25px; border-radius: 8px; text-decoration: none; font-weight: bold; margin: 20px 0; }
+        .footer { text-align: center; margin-top: 30px; font-size: 12px; color: #999999; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Richatz.AI</h1>
+        </div>
+        <div class="content">
+            <p>Hello {name},</p>
+            {main_content}
+            <p>If you did not request this, please ignore this email.</p>
+            <p>Thanks,<br>The Richatz.AI Team</p>
+        </div>
+        <div class="footer">
+            <p>&copy; 2025 Richatz.AI. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>
+"""
+
 # --- Koneksi Database ---
 DATABASE_URL = os.getenv("POSTGRES_URL")
 def get_db_connection():
@@ -169,8 +206,12 @@ def register():
                     )
             conn.commit()
 
-            msg = Message('Your Richatz.AI Verification Code', sender=os.getenv('MAIL_USERNAME'), recipients=[email])
-            msg.body = f'Hello {name},\n\nYour OTP code is: {otp}\n\nThis code will expire in 10 minutes.'
+            msg = Message('Your Richatz.AI Verification Code', sender=('Richatz.AI', os.getenv('MAIL_USERNAME')), recipients=[email])
+            main_content_for_otp = f"""
+            <p>Thank you for registering. Use the code below to verify your account. This code will expire in 10 minutes.</p>
+            <div class="otp-code">{otp}</div>
+            """
+            msg.html = HTML_EMAIL_TEMPLATE.format(name=name, main_content=main_content_for_otp)
             mail.send(msg)
 
             flash('Registration successful! Please check your email for the OTP code.', 'info')
@@ -222,8 +263,13 @@ def logout():
 
 def send_reset_email(user):
     token = user.get_reset_token()
-    msg = Message('Password Reset Request', sender=os.getenv('MAIL_USERNAME'), recipients=[user.email])
-    msg.body = f'To reset your password, visit the following link:\n{url_for("reset_token", token=token, _external=True)}'
+    msg = Message('Password Reset Request', sender=('Richatz.AI', os.getenv('MAIL_USERNAME')), recipients=[user.email])
+    reset_link = url_for("reset_token", token=token, _external=True)
+    main_content_for_reset = f"""
+    <p>To reset your password, please click the button below. This link will expire in 30 minutes.</p>
+    <a href="{reset_link}" class="button">Reset Password</a>
+    """
+    msg.html = HTML_EMAIL_TEMPLATE.format(name=user.email, main_content=main_content_for_reset)
     mail.send(msg)
 
 @app.route("/reset_password", methods=['GET', 'POST'])
