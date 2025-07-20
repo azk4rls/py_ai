@@ -387,8 +387,6 @@ body.sidebar-open .history-sidebar {
 
 /* Ini adalah bagian pentingnya */
 .prompt-container:focus-within {
-    transform: translateY(-10px);
-    transform: translateX(10px);
     border-color: #6d7eff; /* Ubah warna border saat aktif */
     box-shadow: 0 0 30px rgba(171, 75, 255, 0.5); /* Tambahkan shadow/glow */
 }
