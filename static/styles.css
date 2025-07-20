@@ -375,12 +375,22 @@ body.sidebar-open .history-sidebar {
     display: flex;
     align-items: center;
     background-color: #FFFFFF;
-    border-radius: 12px;
+    border-radius: 15px;
     padding: 8px;
-    max-width: 1200px;
+    max-width: 800px;
     margin: 0 auto;
-    /* Pastikan container input bisa menyusut */
-    min-width: 0; 
+    
+    /* Atur border awal dan transisi */
+    border: 2px solid #FFFFFF;
+    transition: border-color 0.3s ease-in-out, box-shadow 0.7s ease-in-out;
+}
+
+/* Ini adalah bagian pentingnya */
+.prompt-container:focus-within {
+    transform: translateY(-10px);
+    transform: translateX(10px);
+    border-color: #6d7eff; /* Ubah warna border saat aktif */
+    box-shadow: 0 0 30px rgba(171, 75, 255, 0.5); /* Tambahkan shadow/glow */
 }
 
 #prompt-input {
