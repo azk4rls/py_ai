@@ -56,7 +56,7 @@ HTML_EMAIL_TEMPLATE = """
             <p>Hello {name},</p>
             {main_content}
             <p>If you did not request this, please ignore this email.</p>
-            <p>Thanks,<br>The Richatz.AI Team</p>
+            <p>Thanks,<br>The R.ARTCH Team</p>
         </div>
         <div class="footer">
             <p>&copy; 2025 Richatz.AI. All rights reserved.</p>
