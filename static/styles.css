@@ -249,7 +249,7 @@ body.sidebar-open .history-sidebar {
 }
 
 .nav-button {
-    background-color: #e0eff7;
+    background-color: #eff9ff;
     color: #000000;
     border: none;
     padding: 10px 20px;
@@ -263,7 +263,7 @@ body.sidebar-open .history-sidebar {
 }
 
 .nav-button:hover {
-    background-color: #333;
+    background-color: #6bcbff;
     transform: translateY(-2px);
 }
 
