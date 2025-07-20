@@ -18,14 +18,14 @@
 
     <form method="POST" action="{{ url_for('verify_otp', email=email) }}" class="auth-form otp-form">
         <div class="form-group">
-            <label for="otp1">OTP Code</label>
+            <label>OTP Code</label>
             <div class="otp-input-group">
-                <input type="text" id="otp1" name="otp1" maxlength="1" required autofocus>
-                <input type="text" id="otp2" name="otp2" maxlength="1" required>
-                <input type="text" id="otp3" name="otp3" maxlength="1" required>
-                <input type="text" id="otp4" name="otp4" maxlength="1" required>
-                <input type="text" id="otp5" name="otp5" maxlength="1" required>
-                <input type="text" id="otp6" name="otp6" maxlength="1" required>
+                <input type="text" name="otp1" maxlength="1" required autofocus>
+                <input type="text" name="otp2" maxlength="1" required>
+                <input type="text" name="otp3" maxlength="1" required>
+                <input type="text" name="otp4" maxlength="1" required>
+                <input type="text" name="otp5" maxlength="1" required>
+                <input type="text" name="otp6" maxlength="1" required>
             </div>
         </div>
         <button type="submit" class="btn-primary">Verify</button>
@@ -34,7 +34,6 @@
     <p class="auth-switch">Didn't receive a code? <a href="#">Resend</a></p>
 
     <script>
-        // JavaScript untuk auto-focus/tab antar kotak OTP
         const inputs = document.querySelectorAll('.otp-input-group input');
         inputs.forEach((input, index) => {
             input.addEventListener('keyup', (e) => {
