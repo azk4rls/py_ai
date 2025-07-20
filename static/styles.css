@@ -363,10 +363,10 @@ body.sidebar-open .history-sidebar {
 
 /* --- Footer (Input) --- */
 .main-footer {
-    background-color: #F1F1F1;
+    background-color: #1E1E1E;
     padding: 16px 24px;
     flex-shrink: 0;
-    border-top: 1px solid #ddd;
+    border-top: 1px solid #1E1E1E;
     /* Pastikan footer juga bisa menyusut */
     min-width: 0; 
 }
