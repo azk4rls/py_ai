@@ -16,13 +16,47 @@
       {% endif %}
     {% endwith %}
 
-    <form method="POST" action="{{ url_for('verify_otp', email=email) }}" class="auth-form">
+    <form method="POST" action="{{ url_for('verify_otp', email=email) }}" class="auth-form otp-form">
         <div class="form-group">
-            <label for="otp">OTP Code</label>
-            <input type="text" id="otp" name="otp" required placeholder="Enter 6 digit code" maxlength="6" autofocus>
+            <label>OTP Code</label>
+            <div class="otp-input-group">
+                <input type="text" name="otp1" maxlength="1" required autofocus>
+                <input type="text" name="otp2" maxlength="1" required>
+                <input type="text" name="otp3" maxlength="1" required>
+                <input type="text" name="otp4" maxlength="1" required>
+                <input type="text" name="otp5" maxlength="1" required>
+                <input type="text" name="otp6" maxlength="1" required>
+            </div>
         </div>
         <button type="submit" class="btn-primary">Verify</button>
     </form>
     
     <p class="auth-switch">Didn't receive a code? <a href="#">Resend</a></p>
+
+    <script>
+        const inputs = document.querySelectorAll('.otp-input-group input');
+        inputs.forEach((input, index) => {
+            input.addEventListener('keyup', (e) => {
+                const currentInput = input;
+                const nextInput = input.nextElementSibling;
+                const prevInput = input.previousElementSibling;
+
+                if (currentInput.value.length > 1) {
+                    currentInput.value = "";
+                    return;
+                }
+                
+                if (nextInput && nextInput.hasAttribute("maxlength") && currentInput.value !== "") {
+                    nextInput.focus();
+                }
+
+                if (e.key === "Backspace") {
+                    if (prevInput) {
+                        currentInput.value = "";
+                        prevInput.focus();
+                    }
+                }
+            });
+        });
+    </script>
 {% endblock %}

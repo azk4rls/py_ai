@@ -82,8 +82,14 @@ except Exception as e:
     model = None
     logging.error(f"Error Konfigurasi Gemini: {e}")
 
-briefing_user = "..." # Silakan isi briefing Anda
-briefing_model = "..." # Silakan isi briefing Anda
+briefing_user = """
+PERATURAN UTAMA DAN IDENTITAS DIRI ANDA:
+1. Nama kamu adalah Richatz.AI, dibuat oleh seorang developer Indonesia bernama 'R.AI'. Versi kamu adalah 1.0 SPRO.
+2. Jika ditanya identitasmu, jawab sesuai poin 1. Jangan pernah menjawab "Saya adalah model bahasa besar".
+3. Kamu TIDAK punya akses internet real-time.
+4. Sangat Penting: Jika kamu memberikan contoh kode, selalu gunakan Markdown Code Blocks.
+"""
+briefing_model = "Siap, saya mengerti. Nama saya Richatz.AI v1.0 SPRO."
 
 # === ROUTES APLIKASI UTAMA ===
 @app.route('/')
@@ -91,7 +97,7 @@ briefing_model = "..." # Silakan isi briefing Anda
 def home():
     return render_template('index.html')
 
-# === ROUTES AUTENTIKASI (Lengkap) ===
+# === ROUTES AUTENTIKASI (LENGKAP) ===
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
@@ -175,9 +181,8 @@ def verify_otp():
     email = request.args.get('email')
     if not email:
         return redirect(url_for('register'))
-
     if request.method == 'POST':
-        otp_from_form = request.form['otp']
+        otp_from_form = "".join([request.form.get(f'otp{i}', '') for i in range(1, 7)])
         conn = None
         try:
             conn = get_db_connection()
@@ -217,15 +222,51 @@ def send_reset_email(user):
 
 @app.route("/reset_password", methods=['GET', 'POST'])
 def reset_request():
-    # ... (kode lupa password Anda) ...
-    pass
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
+    if request.method == 'POST':
+        email = request.form.get('email')
+        conn = None
+        try:
+            conn = get_db_connection()
+            with conn.cursor() as cur:
+                cur.execute("SELECT id, email FROM users WHERE email = %s", (email,))
+                user_data = cur.fetchone()
+            if user_data:
+                user = User(id=user_data[0], email=user_data[1])
+                send_reset_email(user)
+            flash('Jika email terdaftar, instruksi reset password telah dikirim.', 'info')
+            return redirect(url_for('login'))
+        finally:
+            if conn: conn.close()
+    return render_template('reset_request.html')
 
 @app.route("/reset_password/<token>", methods=['GET', 'POST'])
 def reset_token(token):
-    # ... (kode lupa password Anda) ...
-    pass
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
+    user = User.verify_reset_token(token)
+    if user is None:
+        flash('Token tidak valid atau sudah kedaluwarsa.', 'warning')
+        return redirect(url_for('reset_request'))
+    if request.method == 'POST':
+        password = request.form.get('password')
+        hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+        conn = None
+        try:
+            conn = get_db_connection()
+            with conn.cursor() as cur:
+                cur.execute("UPDATE users SET password_hash = %s WHERE id = %s", (hashed_password.decode('utf-8'), user.id))
+            conn.commit()
+            flash('Password Anda telah diubah! Silakan login.', 'success')
+            return redirect(url_for('login'))
+        finally:
+            if conn: conn.close()
+    return render_template('reset_token.html')
+
 
 # === ROUTES CHAT API (Lengkap & Aman) ===
+
 @app.route('/history', methods=['GET'])
 @login_required
 def get_history():
@@ -236,6 +277,8 @@ def get_history():
             cur.execute("SELECT id, title FROM conversations WHERE user_id = %s ORDER BY timestamp DESC", (current_user.id,))
             conversations = cur.fetchall()
         return jsonify(conversations)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
     finally:
         if conn: conn.close()
 
@@ -253,6 +296,8 @@ def get_conversation(conversation_id):
             cur.execute("SELECT role, content FROM messages WHERE conversation_id = %s AND role IN ('user', 'assistant') ORDER BY timestamp ASC", (conversation_id,))
             messages = cur.fetchall()
             return jsonify(messages or [])
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
     finally:
         if conn: conn.close()
 
@@ -269,6 +314,8 @@ def delete_conversation(conversation_id):
                 return jsonify({'status': 'success'})
             else:
                 return jsonify({'status': 'error', 'message': 'Percakapan tidak ditemukan'}), 404
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)}), 500
     finally:
         if conn: conn.close()
 
@@ -284,6 +331,8 @@ def new_chat():
                         (conversation_id, "Percakapan Baru", current_user.id))
         conn.commit()
         return jsonify({'conversation_id': conversation_id})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
     finally:
         if conn: conn.close()
 
@@ -310,6 +359,8 @@ def ask_ai():
             cur.execute("SELECT role, content FROM messages WHERE conversation_id = %s ORDER BY timestamp DESC LIMIT 6", (conversation_id,))
             db_history_reversed = cur.fetchall()
             db_history = list(reversed(db_history_reversed))
+    except Exception as e:
+        return jsonify({'answer': f"Maaf, gagal mengambil riwayat chat: {e}"}), 500
     finally:
         if conn: conn.close()
 
@@ -333,6 +384,8 @@ def ask_ai():
             if not db_history:
                 cur.execute("UPDATE conversations SET title = %s WHERE id = %s", (user_prompt[:50], conversation_id))
         conn.commit()
+    except Exception as e:
+        return jsonify({'answer': ai_answer, 'warning': 'Gagal menyimpan percakapan.'})
     finally:
         if conn: conn.close()
 
