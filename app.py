@@ -4,6 +4,7 @@ import psycopg2
 import psycopg2.extras
 import logging
 import random
+import requests
 from datetime import datetime, timedelta, timezone
 from flask import Flask, request, jsonify, render_template, redirect, url_for, flash
 from dotenv import load_dotenv
@@ -345,54 +346,87 @@ def new_chat():
 def ask_ai():
     data = request.get_json()
     conversation_id = data.get('conversation_id')
-    user_prompt = data.get('prompt')
-    if not all([conversation_id, user_prompt]):
+    user_prompt_original = data.get('prompt')
+    if not all([conversation_id, user_prompt_original]):
         return jsonify({'error': 'Conversation ID or prompt missing.'}), 400
     if model is None:
         return jsonify({'answer': "Sorry, the AI model is not configured."}), 500
+
+    user_prompt_lower = user_prompt_original.lower()
+    ai_answer = ""
     
-    db_history = []
-    conn = None
+    if "cuaca" in user_prompt_lower:
+        try:
+            api_key = os.getenv("OPENWEATHERMAP_API_KEY")
+            city = "Jakarta" 
+            if "di" in user_prompt_lower:
+                city = user_prompt_original.split("di ")[-1].split("?")[0].strip()
+            url = f"http://api.openweathermap.org/data/2.5/weather?q={city}&appid={api_key}&units=metric&lang=id"
+            response = requests.get(url).json()
+            if response.get("cod") == 200:
+                cuaca = response['weather'][0]['description']
+                suhu = response['main']['temp']
+                ai_answer = f"Tentu, cuaca di {city.title()} saat ini adalah {cuaca} dengan suhu sekitar {suhu}°C."
+            else:
+                ai_answer = f"Maaf, saya tidak bisa menemukan informasi cuaca untuk {city.title()}."
+        except Exception as e:
+            ai_answer = "Maaf, terjadi kesalahan saat mengambil data cuaca."
+    
+    elif user_prompt_lower.startswith(("siapa", "apa itu", "kapan", "presiden", "berita")):
+        try:
+            api_key = os.getenv("SERPAPI_API_KEY")
+            params = { "engine": "google", "q": user_prompt_original, "api_key": api_key }
+            response = requests.get("https://serpapi.com/search.json", params=params).json()
+            if "answer_box" in response and "answer" in response["answer_box"]:
+                ai_answer = response["answer_box"]["answer"]
+            elif "organic_results" in response and "snippet" in response["organic_results"][0]:
+                ai_answer = response["organic_results"][0]["snippet"]
+            else:
+                raise ValueError("No direct answer found, fallback to Gemini")
+        except Exception:
+            pass 
+
+    if not ai_answer:
+        db_history = []
+        conn = None
+        try:
+            conn = get_db_connection()
+            with conn.cursor() as cur:
+                cur.execute("SELECT user_id FROM conversations WHERE id = %s", (conversation_id,))
+                owner = cur.fetchone()
+                if not owner or owner[0] != current_user.id:
+                    return jsonify({'error': 'Access denied'}), 403
+                cur.execute("SELECT role, content FROM messages WHERE conversation_id = %s ORDER BY timestamp DESC LIMIT 6", (conversation_id,))
+                db_history_reversed = cur.fetchall()
+                db_history = list(reversed(db_history_reversed))
+        finally:
+            if conn: conn.close()
+        
+        try:
+            history_for_ai = [
+                {"role": 'user', "parts": [briefing_user]},
+                {"role": 'model', "parts": [briefing_model]}
+            ]
+            history_for_ai.extend([{"role": ('model' if role in ['assistant', 'model'] else 'user'), "parts": [content]} for role, content in db_history])
+            chat = model.start_chat(history=history_for_ai)
+            response = chat.send_message(user_prompt_original)
+            ai_answer = response.text
+        except Exception as e:
+            return jsonify({'answer': f"Sorry, an error occurred with the AI: {e}"}), 500
+
     try:
         conn = get_db_connection()
         with conn.cursor() as cur:
-            cur.execute("SELECT user_id FROM conversations WHERE id = %s", (conversation_id,))
-            owner = cur.fetchone()
-            if not owner or owner[0] != current_user.id:
-                return jsonify({'error': 'Access denied'}), 403
-            cur.execute("SELECT role, content FROM messages WHERE conversation_id = %s ORDER BY timestamp DESC LIMIT 6", (conversation_id,))
-            db_history_reversed = cur.fetchall()
-            db_history = list(reversed(db_history_reversed))
-    except Exception as e:
-        return jsonify({'answer': f"Sorry, failed to retrieve chat history: {e}"}), 500
-    finally:
-        if conn: conn.close()
-
-    try:
-        history_for_ai = [
-            {"role": 'user', "parts": [briefing_user]},
-            {"role": 'model', "parts": [briefing_model]}
-        ]
-        history_for_ai.extend([{"role": ('model' if role in ['assistant', 'model'] else 'user'), "parts": [content]} for role, content in db_history])
-        chat = model.start_chat(history=history_for_ai)
-        response = chat.send_message(user_prompt)
-        ai_answer = response.text
-    except Exception as e:
-        return jsonify({'answer': f"Sorry, an error occurred with the AI: {e}"}), 500
-
-    try:
-        conn = get_db_connection()
-        with conn.cursor() as cur:
-            cur.execute('INSERT INTO messages (conversation_id, role, content) VALUES (%s, %s, %s)', (conversation_id, 'user', user_prompt))
+            cur.execute('INSERT INTO messages (conversation_id, role, content) VALUES (%s, %s, %s)', (conversation_id, 'user', user_prompt_original))
             cur.execute('INSERT INTO messages (conversation_id, role, content) VALUES (%s, %s, %s)', (conversation_id, 'assistant', ai_answer))
             if not db_history:
-                cur.execute("UPDATE conversations SET title = %s WHERE id = %s", (user_prompt[:50], conversation_id))
+                cur.execute("UPDATE conversations SET title = %s WHERE id = %s", (user_prompt_original[:50], conversation_id))
         conn.commit()
     except Exception as e:
-        return jsonify({'answer': ai_answer, 'warning': 'Failed to save conversation.'})
+        logging.error(f"Failed to save message: {e}")
     finally:
         if conn: conn.close()
-
+    
     return jsonify({'answer': ai_answer})
 
 if __name__ == '__main__':
