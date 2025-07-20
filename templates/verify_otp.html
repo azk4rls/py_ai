@@ -1,10 +1,10 @@
 {% extends "layout.html" %}
 
-{% block title %}Verifikasi OTP - Richatz.AI{% endblock %}
+{% block title %}Verify OTP - Richatz.AI{% endblock %}
 
 {% block content %}
-    <h2>Verifikasi Akun Anda</h2>
-    <p>Kami telah mengirimkan kode OTP ke <strong>{{ email }}</strong>. Silakan masukkan di bawah ini.</p>
+    <h2>Verify Your Account</h2>
+    <p>We have sent the OTP code to <strong>{{ email }}</strong>. Please enter below.</p>
     
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
@@ -16,9 +16,9 @@
 
     <form method="POST" action="{{ url_for('verify_otp', email=email) }}">
         <div class="form-group">
-            <label for="otp">Kode OTP</label>
+            <label for="otp">OTP Code</label>
             <input type="text" id="otp" name="otp" required placeholder="Masukkan 6 digit kode" maxlength="6">
         </div>
-        <button type="submit" class="btn-primary">Verifikasi</button>
+        <button type="submit" class="btn-primary">Verification</button>
     </form>
-    <p class="auth-switch">Tidak menerima kode? <a href="#">Kirim ulang</a></p> {% endblock %}
+    <p class="auth-switch">Not Receiving Code?<a href="#">Resend</a></p> {% endblock %}

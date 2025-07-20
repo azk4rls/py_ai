@@ -17,7 +17,7 @@
 
     <aside id="history-sidebar" class="history-sidebar">
         <div class="history-header">
-            <h3>Riwayat Percakapan</h3>
+            <h3>Chat History</h3>
             <button id="close-history-btn" class="close-btn">&times;</button>
         </div>
         <ul id="history-list" class="history-list">
@@ -36,7 +36,8 @@
                     <button id="profile-icon-btn" class="avatar" aria-label="User Menu"></button>
                     <div class="dropdown-menu" id="profile-dropdown">
                         <div class="dropdown-header">
-                            Masuk sebagai:<br>
+                            Log In As:<br>
+                            <strong>{{ current_user.name }}</strong>
                             <strong>{{ current_user.email }}</strong>
                         </div>
                         <a href="{{ url_for('logout') }}" class="dropdown-item">
@@ -51,8 +52,8 @@
 
         <footer class="main-footer">
             <form id="prompt-form" class="prompt-container">
-                <input type="text" id="prompt-input" placeholder="Ketikkan Prompt Mu..." autocomplete="off">
-                <button type="submit" aria-label="Kirim Pesan">
+                <input type="text" id="prompt-input" placeholder="Ask Something..." autocomplete="off">
+                <button type="submit" aria-label="Send Message">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-send"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
                 </button>
             </form>
