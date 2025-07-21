@@ -220,6 +220,11 @@
     box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
 }
 
+a .btn-primary {
+    text-decoration: none; /* Hapus garis bawah pada link */
+    display: inline-block; /* Agar bisa diberi padding */
+}
+
 /* --- PERBAIKAN: Bagian Responsif --- */
 @media (max-width: 480px) {
     .auth-body {
