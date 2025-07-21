@@ -286,7 +286,7 @@ def reset_request():
                 cur.execute("SELECT id, email FROM users WHERE email = %s", (email,))
                 user_data = cur.fetchone()
             if user_data:
-                user = User(id=user_data[0], email=user_data[1])
+                user = User(id=user_data[0], email=user_data[1], name=user_data[2])
                 send_reset_email(user)
             flash('If the email is registered, password reset instructions have been sent.', 'info')
             return redirect(url_for('login'))
@@ -425,14 +425,20 @@ def ask_ai():
             api_key = os.getenv("SERPAPI_API_KEY")
             params = { "engine": "google", "q": user_prompt_original, "api_key": api_key }
             response = requests.get("https://serpapi.com/search.json", params=params).json()
-            if "answer_box" in response and "answer" in response["answer_box"]:
-                ai_answer = response["answer_box"]["answer"]
-            elif "organic_results" in response and "snippet" in response["organic_results"][0]:
-                ai_answer = response["organic_results"][0]["snippet"]
-            else:
-                raise ValueError("No direct answer found, fallback to Gemini")
-        except Exception:
-            pass 
+            context_snippets = []
+            if "organic_results" in response:
+                for result in response["organic_results"][:3]:
+                    if "snippet" in result:
+                        context_snippets.append(result["snippet"])
+            if not context_snippets:
+                raise ValueError("No context found from web search")
+            context = " ".join(context_snippets)
+            augmented_prompt = f"""Berdasarkan informasi dari internet berikut: "{context}", jawab pertanyaan ini secara detail, lengkap, dan jelaskan dengan baik dalam Bahasa Indonesia: "{user_prompt_original}" """
+            response = model.generate_content(augmented_prompt)
+            ai_answer = response.text
+        except Exception as e:
+            logging.error(f"SerpAPI/Augmented prompt failed: {e}")
+            ai_answer = ""
 
     if not ai_answer:
         conn = None
