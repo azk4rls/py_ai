@@ -220,6 +220,10 @@
     box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
 }
 
+btn-primary start-btn {
+    text-decoration: none;
+}
+
 /* --- PERBAIKAN: Bagian Responsif --- */
 @media (max-width: 480px) {
     .auth-body {
