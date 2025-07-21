@@ -82,9 +82,10 @@ login_manager.init_app(app)
 login_manager.login_view = 'login'
 
 class User(UserMixin):
-    def __init__(self, id, email):
+    def __init__(self, id, email, name):
         self.id = id
         self.email = email
+        self.name = name
     def get_reset_token(self):
         s = Serializer(app.config['SECRET_KEY'])
         return s.dumps({'user_id': self.id})
@@ -103,10 +104,10 @@ def load_user(user_id):
     try:
         conn = get_db_connection()
         with conn.cursor() as cur:
-            cur.execute("SELECT id, email FROM users WHERE id = %s", (int(user_id),))
+            cur.execute("SELECT id, email, name FROM users WHERE id = %s", (int(user_id),))
             user_data = cur.fetchone()
         if user_data:
-            return User(id=user_data[0], email=user_data[1])
+            return User(id=user_data[0], email=user_data[1], name=user_data[2])
         return None
     finally:
         if conn: conn.close()
@@ -135,11 +136,16 @@ briefing_model = "Siap, saya mengerti. Nama saya Richatz.AI v1.0 SPRO."
 def home():
     return render_template('index.html')
 
+@app.route('/start')
+@login_required
+def start_page():
+    return render_template('start_chat.html')
+
 # === ROUTES AUTENTIKASI (LENGKAP) ===
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
-        return redirect(url_for('home'))
+        return redirect(url_for('start_page'))
     if request.method == 'POST':
         email = request.form['email']
         password = request.form['password']
@@ -156,10 +162,10 @@ def login():
                     flash('Your account is not verified. Please check your email for the OTP.', 'warning')
                     return redirect(url_for('verify_otp', email=email))
 
-                user = User(id=user_data['id'], email=user_data['email'])
+                user = User(id=user_data['id'], email=user_data['email'], name=user_data['name'])
                 login_user(user, remember=remember)
                 next_page = request.args.get('next')
-                return redirect(next_page or url_for('home'))
+                return redirect(next_page or url_for('start_page'))
             else:
                 flash('Incorrect email or password.', 'danger')
         finally:
@@ -310,7 +316,6 @@ def reset_token(token):
         finally:
             if conn: conn.close()
     return render_template('reset_token.html')
-
 
 # === ROUTES CHAT API (Lengkap & Aman) ===
 @app.route('/history', methods=['GET'])

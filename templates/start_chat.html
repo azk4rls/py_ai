@@ -1,0 +1,13 @@
+{% extends "layout.html" %}
+
+{% block title %}Welcome - Richatz.AI{% endblock %}
+
+{% block content %}
+    <div class="start-chat-container">
+        <h2>Welcome, {{ current_user.name }}!</h2>
+        
+        <p>You are ready to start a conversation with Richatz.AI.</p>
+        
+        <a href="{{ url_for('home') }}" class="btn-primary start-btn">Start Chat</a>
+    </div>
+{% endblock %}
