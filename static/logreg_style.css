@@ -6,9 +6,18 @@
 
 /* Import Font dari Google */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+
+html, body {
+    max-width: 100vw;
+    overflow-x: hidden;
+}
+
 *{
    box-sizing: border-box;
+   padding: 0;
+   margin: 0;
 }
+
 
 /* Tambahkan ini di mana saja di dalam styles.css */
 
