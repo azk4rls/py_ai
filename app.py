@@ -317,6 +317,7 @@ def reset_token(token):
             if conn: conn.close()
     return render_template('reset_token.html')
 
+
 # === ROUTES CHAT API (Lengkap & Aman) ===
 @app.route('/history', methods=['GET'])
 @login_required
