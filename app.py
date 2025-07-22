@@ -116,7 +116,7 @@ def load_user(user_id):
 try:
     api_key = os.getenv("GOOGLE_API_KEY")
     genai.configure(api_key=api_key)
-    model = genai.GenerativeModel('gemini-1.5-pro')
+    model = genai.GenerativeModel('gemini-1.5-flash')
 except Exception as e:
     model = None
     logging.error(f"Error Konfigurasi Gemini: {e}")
