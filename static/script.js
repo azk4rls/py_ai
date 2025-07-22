@@ -22,12 +22,20 @@ document.addEventListener('DOMContentLoaded', () => {
     // === 3. Fungsi-fungsi Inti ===
 
     /** Menampilkan pesan di UI, dengan parsing Markdown untuk AI */
-    const appendMessage = (text, sender) => {
+    // static/script.js
+
+/** Menampilkan pesan di UI, dengan parsing Markdown untuk AI */
+const appendMessage = (text, sender) => {
+    const chatContainer = document.getElementById('chat-area'); // Pastikan ini didefinisikan di atas
+    
+    // Hapus indikator loading jika ada
     const typingIndicator = chatContainer.querySelector('.typing-indicator');
     if (typingIndicator) typingIndicator.remove();
+
     const messageDiv = document.createElement('div');
     messageDiv.className = `chat-message ${sender}-message`;
 
+    // Ubah Markdown menjadi HTML
     if (sender === 'ai' && window.marked) {
         messageDiv.innerHTML = marked.parse(text, { sanitize: true });
     } else {
@@ -35,14 +43,45 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     chatContainer.appendChild(messageDiv);
-    chatContainer.scrollTop = chatContainer.scrollHeight;
 
-    // 👇 TAMBAHKAN BLOK INI 👇
-    // Cari semua blok kode di dalam pesan yang baru ditambahkan dan warnai
-    messageDiv.querySelectorAll('pre code').forEach((block) => {
-        hljs.highlightElement(block);
+    // --- 👇 BAGIAN BARU UNTUK TOMBOL COPY & SYNTAX HIGHLIGHTING 👇 ---
+
+    // Cari semua blok kode di dalam pesan yang baru ditambahkan
+    const codeBlocks = messageDiv.querySelectorAll('pre code');
+    
+    codeBlocks.forEach((block) => {
+        // 1. Terapkan pewarnaan (Syntax Highlighting)
+        if (window.hljs) {
+            hljs.highlightElement(block);
+        }
+
+        // 2. Buat dan tambahkan tombol "Copy"
+        const preElement = block.parentElement; // Ambil parent <pre>
+        if (preElement.querySelector('.copy-code-btn')) return; // Hindari duplikasi tombol
+
+        const copyButton = document.createElement('button');
+        copyButton.className = 'copy-code-btn';
+        copyButton.innerHTML = '<i class="fa-regular fa-copy"></i> Copy'; // Menggunakan ikon Font Awesome
+
+        preElement.style.position = 'relative'; // Pastikan <pre> bisa menampung tombol
+        preElement.appendChild(copyButton);
+
+        // 3. Tambahkan fungsi klik pada tombol
+        copyButton.addEventListener('click', () => {
+            navigator.clipboard.writeText(block.textContent).then(() => {
+                copyButton.innerHTML = '<i class="fa-solid fa-check"></i> Copied!';
+                setTimeout(() => {
+                    copyButton.innerHTML = '<i class="fa-regular fa-copy"></i> Copy';
+                }, 2000);
+            }).catch(err => {
+                copyButton.textContent = 'Error';
+                console.error('Failed to copy text: ', err);
+            });
+        });
     });
-    // 👆 AKHIR TAMBAHAN 👆
+    // --- 👆 AKHIR BAGIAN BARU 👆 ---
+
+    chatContainer.scrollTop = chatContainer.scrollHeight;
 };
     
     /** Menampilkan indikator "mengetik..." */

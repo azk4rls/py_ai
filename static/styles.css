@@ -457,6 +457,34 @@ body.sidebar-open .history-sidebar {
     font-size: 0.9em;
 }
 
+/* Tombol Copy */
+.copy-code-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background-color: #3d3d3d; /* Warna solid */
+    color: #e5e7eb;           /* Warna solid */
+    border: 1px solid #444;    /* Warna solid */
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-size: 0.8rem;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    opacity: 0.6;
+    transition: opacity 0.2s ease, background-color 0.2s ease;
+}
+
+/* Tombol hanya terlihat jelas saat mouse berada di atas blok kode */
+.chat-message pre:hover .copy-code-btn {
+    opacity: 1;
+}
+
+.copy-code-btn:hover {
+    background-color: #4a4a4a; /* Warna solid */
+}
 
 /* --- Desain Responsif --- */
 @media (max-width: 768px) {
