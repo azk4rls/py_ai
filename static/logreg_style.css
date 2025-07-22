@@ -1,387 +1,269 @@
-/* static/styles.css (FINAL DENGAN SEMUA PERBAIKAN) */
+/* static/styles.css */
 
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap');
+/* static/styles.css */
 
-:root {
-    --bg-primary: #121212;
-    --bg-secondary: #1E1E1E;
-    --bg-tertiary: #343541;
-    --text-primary: #F1F1F1;
-    --text-secondary: #8e8e8e;
-    --border-color: #444;
-    --accent-color: #445aff;
-    --danger-color: #ff4d4d;
-}
+/* --- TEMA BARU UNTUK HALAMAN LOGIN & REGISTER (VERSI PRESISI & RESPONSIVE) --- */
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+/* Import Font dari Google */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
 
 html, body {
     max-width: 100vw;
-    overflow-x: hidden; /* PERBAIKAN: Mencegah zoom out di HP */
+    overflow-x: hidden;
 }
 
-body {
-    font-family: 'Poppins', sans-serif;
-    background-color: var(--bg-primary);
-    color: var(--text-primary);
-    display: flex;
-    height: 100vh;
-}
-
-/* --- History Sidebar & Overlay --- */
-.history-sidebar {
-    width: 320px;
-    height: 100vh;
-    background-color: #202123;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    flex-shrink: 0;
-    z-index: 1001;
-    position: fixed;
-    top: 0;
-    left: -320px; /* PERBAIKAN: Selalu tersembunyi di awal */
-    transition: left 0.35s ease-in-out;
-}
-
-body.sidebar-open .history-sidebar {
-    left: 0; /* Muncul saat class ditambahkan oleh JS */
-}
-
-.history-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-    color: #ececec;
-}
-
-.close-btn {
-    background: none;
-    border: none;
-    color: var(--text-secondary);
-    font-size: 2.5rem;
-    cursor: pointer;
-    line-height: 1;
-}
-
-.history-list {
-    list-style: none;
-    overflow-y: auto;
-    flex-grow: 1;
-}
-
-.history-list li {
-    padding: 10px 15px;
-    margin-bottom: 8px;
-    background-color: var(--bg-tertiary);
-    border-radius: 8px;
-    cursor: pointer;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    transition: transform 0.2s ease, background-color 0.2s; /* ANIMASI */
-}
-
-.history-list li:hover {
-    transform: translateX(5px);
-    background-color: var(--accent-color);
-}
-
-.history-title {
-    color: #fff;
-    font-size: 0.9rem;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    flex-grow: 1;
-    margin-right: 10px;
-}
-
-.delete-chat-btn {
-    background: none;
-    border: none;
-    color: var(--text-secondary);
-    cursor: pointer;
-    transition: color 0.2s;
-}
-
-.delete-chat-btn:hover {
-    color: var(--danger-color);
-}
-
-.sidebar-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.6);
-    z-index: 1000;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.3s ease-in-out;
-}
-
-.sidebar-overlay.active {
-    opacity: 1;
-    visibility: visible;
+*{
+   box-sizing: border-box;
+   padding: 0;
+   margin: 0;
 }
 
 
-/* --- Container Aplikasi Utama --- */
-.app-container {
-    width: 100%;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    background-color: var(--bg-secondary);
-}
+/* Tambahkan ini di mana saja di dalam styles.css */
 
-/* --- Navbar (Atas) --- */
-.main-header {
-    background-color: var(--bg-primary);
-    padding: 1rem 1.5rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-shrink: 0;
-    border-bottom: 1px solid var(--border-color);
-}
-
-.header-left {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-}
-
-/* PERBAIKAN: Tombol menu hanya muncul di mobile */
-.menu-button {
-    display: none;
-    background: transparent;
-    border: 1px solid var(--border-color);
-    color: var(--text-secondary);
-    width: 40px;
-    height: 40px;
-    border-radius: 8px;
-    font-size: 1.1rem;
-    cursor: pointer;
-}
-
-.logo {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--text-primary);
-}
-
-.main-nav {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.nav-button {
-    background-color: var(--bg-tertiary);
-    color: var(--text-primary);
-    border: none;
-    padding: 10px 20px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 0.9rem;
-    font-weight: 500;
-    transition: background-color 0.2s, transform 0.2s;
-}
-
-.nav-button:hover {
-    background-color: #4a4a4a;
-    transform: translateY(-2px);
-}
-
-.avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background-image: url("R.AI.jpg"); /* Pastikan gambar R.AI.jpg ada di folder static */
-    background-size: cover;
-    background-position: center;
-    flex-shrink: 0;
-    border: 2px solid var(--border-color);
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.profile-menu {
-    position: relative;
-}
-
-.dropdown-menu {
-    display: none;
+.back-arrow-btn {
     position: absolute;
-    top: 55px;
-    right: 0;
-    background-color: #2a2a2a;
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-    width: 240px;
-    z-index: 1001;
-    /* ANIMASI */
-    opacity: 0;
-    transform: translateY(-10px);
-    transition: opacity 0.2s ease, transform 0.2s ease;
-    visibility: hidden;
-}
-
-.dropdown-menu.active {
-    display: block;
-    opacity: 1;
-    transform: translateY(0);
-    visibility: visible;
-}
-
-.dropdown-header {
-    padding: 1rem;
-    border-bottom: 1px solid var(--border-color);
-    color: var(--text-secondary);
-    /* PERBAIKAN: Teks tidak menerobos */
-    word-wrap: break-word;
-    word-break: break-all;
-}
-
-.dropdown-item {
+    top: 25px;
+    left: 25px;
+    width: 40px;
+    height: 40px;
+    background-color: #f0f2f5;
+    border-radius: 50%;
     display: flex;
     align-items: center;
-    gap: 0.75rem;
-    padding: 0.75rem 1rem;
-    color: #ececec;
+    justify-content: center;
+    color: #4a5568;
     text-decoration: none;
+    transition: background-color 0.2s ease, transform 0.2s ease;
 }
 
-.dropdown-item:hover {
-    background-color: var(--accent-color);
-    color: white;
+.back-arrow-btn:hover {
+    background-color: #e2e8f0;
+    transform: scale(1.1);
 }
 
-/* --- Area Chat (Tengah) --- */
-.chat-area {
-    flex-grow: 1;
-    padding: 24px;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
+.back-arrow-btn svg {
+    width: 20px;
+    height: 20px;
 }
 
-.chat-message {
-    padding: 12px 18px;
-    border-radius: 18px;
-    max-width: 80%;
-    line-height: 1.6;
-    word-wrap: break-word;
-    /* ANIMASI */
-    animation: message-fade-in 0.4s ease-out forwards;
-}
-
-@keyframes message-fade-in {
-    from {
-        opacity: 0;
-        transform: translateY(15px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.user-message {
-    background-color: var(--accent-color);
-    color: white;
-    align-self: flex-end;
-    border-bottom-right-radius: 4px;
-}
-
-.ai-message {
-    background-color: var(--bg-tertiary);
-    color: var(--text-primary);
-    align-self: flex-start;
-    border-bottom-left-radius: 4px;
-}
-
-.ai-system-message {
-    align-self: center;
-    color: var(--text-secondary);
-    margin: auto; /* PERBAIKAN: Teks di tengah */
-    text-align: center;
-}
-
-/* --- Footer (Input) --- */
-.main-footer {
-    background-color: var(--bg-primary);
-    padding: 1rem 1.5rem;
-    flex-shrink: 0;
-    border-top: 1px solid var(--border-color);
-}
-
-.prompt-container {
-    display: flex;
-    align-items: center;
-    background-color: var(--bg-tertiary);
-    border-radius: 12px;
-    padding: 8px;
-    max-width: 800px;
-    margin: 0 auto;
-    border: 1px solid var(--border-color);
-    transition: all 0.2s ease;
-}
-
-.prompt-container:focus-within {
-    border-color: var(--accent-color);
-    box-shadow: 0 0 10px rgba(68, 90, 255, 0.3);
-}
-
-#prompt-input {
-    flex-grow: 1;
-    border: none;
-    background: transparent;
-    outline: none;
-    padding: 10px;
-    font-size: 1rem;
-    color: var(--text-primary);
-    resize: none;
-    max-height: 200px;
-}
-
-.prompt-container button {
-    background-color: var(--accent-color);
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    width: 48px;
-    height: 48px;
+.auth-body {
     display: flex;
     justify-content: center;
     align-items: center;
-    flex-shrink: 0;
+    min-height: 100vh; /* Gunakan min-height agar bisa di-scroll di layar kecil */
+    padding: 20px; /* Beri sedikit padding di body untuk layar kecil */
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(135deg, #DCF5FF 0%, #FFE8D2 100%);
 }
 
-/* --- Desain Responsif --- */
-@media (max-width: 768px) {
-    body {
-        display: block;
+.auth-container {
+    position: relative;
+    background-color: white;
+    padding: 40px;
+    border-radius: 24px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+}
+
+.auth-header {
+    margin-bottom: 30px;
+}
+
+.auth-header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #1a202c;
+    margin: 0;
+}
+
+.auth-header p {
+    color: #718096;
+    margin-top: 4px;
+    font-size: 1rem;
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #4a5568;
+}
+
+.form-group input[type="text"],
+.form-group input[type="email"],
+.form-group input[type="password"] {
+    width: 100%;
+    padding: 12px 15px;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    background-color: #f7fafc;
+    color: #2d3748;
+    font-size: 1rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+}
+
+/* PERBAIKAN: Gunakan flexbox untuk mensejajarkan elemen */
+.form-extra {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.875rem;
+    margin-bottom: 25px;
+}
+
+/* Custom Checkbox */
+.remember-me {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+.remember-me input[type="checkbox"] { display: none; }
+.remember-me .checkmark {
+    width: 18px;
+    height: 18px;
+    border: 2px solid #cbd5e0;
+    border-radius: 5px;
+    display: inline-block;
+    position: relative;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+.remember-me input[type="checkbox"]:checked + .checkmark {
+    background-color: #6366f1;
+    border-color: #6366f1;
+}
+.remember-me .checkmark::after {
+    content: "";
+    position: absolute;
+    display: none;
+    left: 5px; top: 2px;
+    width: 5px; height: 10px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+.remember-me input[type="checkbox"]:checked + .checkmark::after { display: block; }
+.remember-me .label-text { color: #4a5568; font-weight: 500; }
+
+.forgot-password {
+    color: #6366f1;
+    font-weight: 500;
+    text-decoration: none;
+}
+.forgot-password:hover { text-decoration: underline; }
+
+.btn-primary {
+    width: 100%;
+    padding: 15px;
+    border: none;
+    border-radius: 12px;
+    background-color: #ffeadb;
+    color: #3d2c21;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.auth-switch {
+    text-align: center;
+    margin-top: 25px;
+    font-size: 0.9rem;
+    color: #718096;
+}
+.auth-switch a { 
+    color: #6366f1; font-weight: 500; }
+
+    /* --- Styling untuk Input OTP 6 Kotak --- */
+
+.otp-form .form-group {
+    /* Menengahkan label dan grup input */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.otp-input-group {
+    display: flex;
+    justify-content: center;
+    gap: 10px; /* Jarak antar kotak */
+    margin-top: 8px; /* Jarak dari label "OTP Code" */
+}
+
+.otp-input-group input {
+    width: 48px;
+    height: 56px;
+    font-size: 1.5rem; /* Ukuran angka di dalam kotak */
+    text-align: center;
+    padding: 0; /* Hapus padding default agar teks pas di tengah */
+}
+
+.otp-input-group input:focus {
+    outline: none;
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+}
+
+a .btn-primary {
+    text-decoration: none; /* Hapus garis bawah pada link */
+    display: inline-block; /* Agar bisa diberi padding */
+}
+
+/* --- PERBAIKAN: Bagian Responsif --- */
+@media (max-width: 480px) {
+    .auth-body {
+        padding: 10px; /* Kurangi padding di body agar form tidak terlalu mepet */
     }
-    .main-header {
-        justify-content: space-between;
+    .auth-container {
+        padding: 25px; /* Kurangi padding di dalam container form */
     }
-    /* PERBAIKAN: Tombol menu muncul, logo tetap ada */
-    .menu-button {
-        display: flex;
+    .auth-header h1 {
+        font-size: 2rem; /* Kecilkan judul */
     }
-    /* PERBAIKAN: Tombol History disembunyikan di mobile */
-    #history-btn {
-        display: none;
+    .auth-header p {
+        font-size: 0.9rem; /* Kecilkan sub-judul */
+    }
+    /* Pastikan bagian remember me dan lupa password tidak aneh */
+    .form-extra {
+        flex-direction: column; /* Susun ke bawah di layar sangat kecil */
+        align-items: flex-start;
+        gap: 15px;
+    }
+    .otp-input-group input {
+        font-size: 1.2rem; /* Paksa ukuran font lebih kecil di mobile */
+        width: 40px;       /* Sesuaikan lebar kotak */
+        height: 48px;      /* Sesuaikan tinggi kotak */
     }
 }
+
+/* Flash Messages (Notifikasi) */
+.alert { padding: 1rem; margin-bottom: 1rem; border-radius: 6px; text-align: center; }
+.alert-success { background-color: #166534; color: #dcfce7; }
+.alert-danger { background-color: #991b1b; color: #fee2e2; }
+.alert-info { background-color: #1e40af; color: #dbeafe; }
+.alert-warning { background-color: #9a3412; color: #ffedd5; }
