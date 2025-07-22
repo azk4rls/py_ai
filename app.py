@@ -116,7 +116,7 @@ def load_user(user_id):
 try:
     api_key = os.getenv("GOOGLE_API_KEY")
     genai.configure(api_key=api_key)
-    model = genai.GenerativeModel('gemini-1.5-flash')
+    model = genai.GenerativeModel('gemini-1.5-pro')
 except Exception as e:
     model = None
     logging.error(f"Error Konfigurasi Gemini: {e}")
@@ -405,20 +405,35 @@ def ask_ai():
     
     if "cuaca" in user_prompt_lower:
         try:
+            # LANGKAH 1: Minta Gemini untuk mengekstrak nama kota dari pertanyaan
+            extraction_prompt = f"""Dari kalimat berikut, ekstrak HANYA nama kota atau lokasinya. Jika tidak disebutkan secara spesifik, jawab HANYA dengan kata 'None'. Kalimat: '{user_prompt_original}'"""
+            
+            city_response = model.generate_content(extraction_prompt)
+            city = city_response.text.strip()
+
+            # Jika Gemini tidak menemukan kota, gunakan default atau bisa juga bertanya kembali ke user
+            if city.lower() == 'none' or not city:
+                city = "Jakarta" # Tetap gunakan default jika tidak ada kota dalam pertanyaan
+                logging.info(f"Tidak ada kota terdeteksi, menggunakan default: {city}")
+            else:
+                logging.info(f"Kota yang terdeteksi oleh AI: {city}")
+
+            # LANGKAH 2: Panggil API OpenWeatherMap dengan kota yang sudah diekstrak
             api_key = os.getenv("OPENWEATHERMAP_API_KEY")
-            city = "Jakarta" 
-            if "di" in user_prompt_lower:
-                city = user_prompt_original.split("di ")[-1].split("?")[0].strip()
             url = f"http://api.openweathermap.org/data/2.5/weather?q={city}&appid={api_key}&units=metric&lang=id"
             response = requests.get(url).json()
+            
             if response.get("cod") == 200:
                 cuaca = response['weather'][0]['description']
                 suhu = response['main']['temp']
                 ai_answer = f"Tentu, cuaca di {city.title()} saat ini adalah {cuaca} dengan suhu sekitar {suhu}°C."
             else:
-                ai_answer = f"Maaf, saya tidak bisa menemukan informasi cuaca untuk {city.title()}."
+                # Jika kota hasil ekstraksi tidak ditemukan oleh API cuaca
+                ai_answer = f"Maaf, saya tidak dapat menemukan data cuaca untuk '{city.title()}'. Pastikan nama lokasinya benar."
+
         except Exception as e:
-            ai_answer = "Maaf, terjadi kesalahan saat mengambil data cuaca."
+            logging.error(f"Error saat memproses permintaan cuaca: {e}")
+            ai_answer = "Maaf, terjadi kesalahan saat memproses permintaan cuaca."
     
     elif user_prompt_lower.startswith(("siapa", "apa itu", "kapan", "presiden", "berita")):
         try:
