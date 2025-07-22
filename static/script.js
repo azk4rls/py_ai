@@ -23,21 +23,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
     /** Menampilkan pesan di UI, dengan parsing Markdown untuk AI */
     const appendMessage = (text, sender) => {
-        const typingIndicator = chatContainer.querySelector('.typing-indicator');
-        if (typingIndicator) typingIndicator.remove();
+    const typingIndicator = chatContainer.querySelector('.typing-indicator');
+    if (typingIndicator) typingIndicator.remove();
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `chat-message ${sender}-message`;
 
-        const messageDiv = document.createElement('div');
-        messageDiv.className = `chat-message ${sender}-message`;
+    if (sender === 'ai' && window.marked) {
+        messageDiv.innerHTML = marked.parse(text, { sanitize: true });
+    } else {
+        messageDiv.textContent = text;
+    }
+    
+    chatContainer.appendChild(messageDiv);
+    chatContainer.scrollTop = chatContainer.scrollHeight;
 
-        if (sender === 'ai' && window.marked) {
-            messageDiv.innerHTML = marked.parse(text, { sanitize: true });
-        } else {
-            messageDiv.textContent = text;
-        }
-        
-        chatContainer.appendChild(messageDiv);
-        chatContainer.scrollTop = chatContainer.scrollHeight;
-    };
+    // 👇 TAMBAHKAN BLOK INI 👇
+    // Cari semua blok kode di dalam pesan yang baru ditambahkan dan warnai
+    messageDiv.querySelectorAll('pre code').forEach((block) => {
+        hljs.highlightElement(block);
+    });
+    // 👆 AKHIR TAMBAHAN 👆
+};
     
     /** Menampilkan indikator "mengetik..." */
     const showTypingIndicator = () => {
