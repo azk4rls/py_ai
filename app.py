@@ -270,8 +270,16 @@ def send_reset_email(user):
     <p>To reset your password, please click the button below. This link will expire in 30 minutes.</p>
     <a href="{reset_link}" class="button">Reset Password</a>
     """
-    msg.html = HTML_EMAIL_TEMPLATE.format(name=user.email, main_content=main_content_for_reset)
-    mail.send(msg)
+    msg.html = HTML_EMAIL_TEMPLATE.format(name=user.name, main_content=main_content_for_reset)
+    
+    # PERBAIKAN: Menambahkan try-except di sini untuk error logging yang lebih baik
+    try:
+        mail.send(msg)
+        logging.info(f"Email reset password berhasil dikirim ke {user.email}")
+    except Exception as e:
+        logging.error(f"GAGAL MENGIRIM EMAIL ke {user.email}: {e}")
+        # Melempar kembali error agar bisa ditangkap oleh route utama
+        raise e
 
 @app.route("/reset_password", methods=['GET', 'POST'])
 def reset_request():
@@ -282,14 +290,22 @@ def reset_request():
         conn = None
         try:
             conn = get_db_connection()
-            with conn.cursor() as cur:
-                cur.execute("SELECT id, email FROM users WHERE email = %s", (email,))
+            with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+                cur.execute("SELECT * FROM users WHERE email = %s", (email,))
                 user_data = cur.fetchone()
+            
             if user_data:
-                user = User(id=user_data[0], email=user_data[1], name=user_data[2])
+                user = User(id=user_data['id'], email=user_data['email'], name=user_data['name'])
                 send_reset_email(user)
-            flash('If the email is registered, password reset instructions have been sent.', 'info')
+            
+            flash('If an account with that email exists, a password reset link has been sent.', 'info')
             return redirect(url_for('login'))
+
+        except Exception as e:
+            # Ini akan menangkap error dari send_reset_email
+            logging.error(f"Error di route reset_request: {e}")
+            flash('An error occurred while trying to send the email. Please check server logs.', 'danger')
+            return redirect(url_for('reset_request'))
         finally:
             if conn: conn.close()
     return render_template('reset_request.html')
