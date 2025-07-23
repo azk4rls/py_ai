@@ -291,7 +291,7 @@ def reset_request():
         try:
             conn = get_db_connection()
             with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
-                cur.execute("SELECT * FROM users WHERE email = %s", (email,))
+                cur.execute("SELECT id, email, name FROM users WHERE email = %s", (email,))
                 user_data = cur.fetchone()
             
             if user_data:
