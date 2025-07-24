@@ -40,7 +40,7 @@
                     <div class="dropdown-menu" id="profile-dropdown">
                         <div class="dropdown-header">
                             Log In As:<br>
-                            <strong>{{ current_user.email }}</strong>
+                            <strong>{{ current_user.name }}</strong>
                         </div>
                         <a href="{{ url_for('logout') }}" class="dropdown-item">
                             <i class="fa-solid fa-power-off"></i> Logout
